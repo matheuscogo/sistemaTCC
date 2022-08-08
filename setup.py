@@ -17,6 +17,4 @@ setup(
     extras_require={
         "dev": read("requirements-dev.txt")
     }
-
-
 )

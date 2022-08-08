@@ -30,7 +30,7 @@ db:
 	)
 
 SHELL := /bin/bash
-flask:asdasdsa
+flask:
 	@( \
 		source .venv/bin/activate; \
 		pip install -e .[dev] --upgrade --no-cache; \

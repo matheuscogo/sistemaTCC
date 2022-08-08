@@ -7,6 +7,7 @@ class Aviso(db.Model):
     confinamentoId = db.Column(db.Integer, db.ForeignKey("confinamento.id"))
     dataAviso = db.Column("dataAviso", db.VARCHAR)
     separar = db.Column("separar", db.Boolean, default=False)
+    status = db.Column("status", db.Integer)
     active = db.Column("active", db.Boolean, default=True)
 
 class AvisoSchema(ma.SQLAlchemyAutoSchema):
