@@ -121,13 +121,13 @@ def getQuantityForMatriz(matrizId):
         
         day = getDaysInConfinament(matrizId=matrizId)
         
-        if day is 0:
+        if day == 0:
             day = 1
             
         dayQuantity = db.session.query(Dia.Dias.quantidade).filter_by(planoId=planoId, dia=day).first()[0]
         totalQuantity = db.session.query(func.sum(Registro.quantidade)).filter_by(matrizId=matrizId, dataEntrada=dataEntrada).first()[0]
         
-        if totalQuantity is None:
+        if totalQuantity == None:
             totalQuantity = 0
         
         total = dayQuantity - totalQuantity
@@ -182,7 +182,7 @@ def getDaysInConfinament(matrizId):
     dataAtual = datetime.today()
     days = dataAtual - dataEntrada
     
-    if days is 0:
+    if days == 0:
         days = 1
         
     print("DIA ENTRADA = " + str(dataEntrada))

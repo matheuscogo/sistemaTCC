@@ -1,6 +1,6 @@
 from sqlalchemy.sql.elements import Null
 from ..site.model import Dia
-from ..site.model.Dia import DiasSchema
+from ..site.model.Dia import DiaSchema
 from ..site.model import Dia
 from ..db import db
 from werkzeug.wrappers import Response, Request
@@ -30,7 +30,7 @@ def consultarDia(planoId, dia):  # Read
         dia = db.session.query(Dia.Dias).filter_by(dia=dia, planoId=planoId).first()
         if not dia:
             raise Exception("")
-        return DiasSchema().dump(dia)
+        return DiaSchema().dump(dia)
     except Exception as e:
         return Response(response=json.dumps("{success: false, message: " + e.args[0] + ", response: null}"), status=501)
 

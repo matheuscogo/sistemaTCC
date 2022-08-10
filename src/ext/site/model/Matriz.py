@@ -2,7 +2,7 @@ from ...db import db, ma
 
 class Matriz(db.Model):
     __tablename__ = "matrizes"
-    __table_args__ = {'extend_existing': True}
+    __table_args__ = {"schema":"sistemaTCC"}
     id = db.Column("id", db.Integer, primary_key=True)
     rfid = db.Column("rfid", db.VARCHAR)
     numero = db.Column("numero", db.VARCHAR)

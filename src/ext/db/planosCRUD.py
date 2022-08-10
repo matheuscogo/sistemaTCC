@@ -25,7 +25,7 @@ import json
 
 def cadastrarPlano(plano, dias):  # Create
     try:
-        if plano.nome is not None:
+        if plano.nome != None:
             planoObj = json.loads(str(dias))
             days = planoObj["plano"]
             db.session.add(plano)

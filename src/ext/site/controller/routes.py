@@ -85,7 +85,7 @@ def excluirMatriz():  # Excluir Matriz
 @bp_controller.route('/cadastrarPlano', methods=['POST'])
 def cadastrarPlano():  # Cadastrar Plano
     try:
-        if planosCRUD.exists(request.form.get("nome")) is not None:
+        if planosCRUD.exists(request.form.get("nome")) != None:
             plano = Plano(
                 nome=request.form.get("nome"),
                           descricao=request.form.get("descricao"),

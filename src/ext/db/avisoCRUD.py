@@ -20,27 +20,21 @@ from ..db import db
 from sqlalchemy.sql import func
 from datetime import datetime, timedelta
 
-def cadastrarAviso(args):  # Create
+def cadastrarAviso(aviso):  # Create
     try:
-        dataAviso = int(args['dataAviso'])
-        confinamentoId = int(args['confinamentoId'])
 
-        dataAviso = datetime.strftime(datetime.fromtimestamp(dataAviso/1000.0), '%d/%m/%y')
-        if not confinamentoId:
+        if not aviso.confinamentoId:
             raise Exception(ResponseError)
             
-        if not dataAviso:
+        if not aviso.dataAviso:
             raise Exception(ResponseError)
 
-        db.session.add(Aviso.Aviso(
-            confinamentoId=confinamentoId,
-            dataAviso=dataAviso)
-        )
-
+        db.session.add(aviso)
         db.session.commit()
+        
         return Response(response=json.dumps("{success: true, message: Aviso cadastrado com sucesso!, response: null}"), status=200)
     except BaseException as e:
-        return Response(response=json.dumps("{success: false, message: " + e.args[0] + ", response: null}"), status=501)
+        return Response(response=json.dumps("{success: false, message: " + e.args[0] + ", response: null}"))
 
 
 def consultarConfinamento(id):  # Read
@@ -56,7 +50,7 @@ def consultarAvisos():  # Read
         
         avisos = []
         
-        if response is not None:
+        if response != None:
             for aviso in response:
                 separarDescription = "Pendente"
             
@@ -125,7 +119,7 @@ def getQuantityForMatriz(matrizId):
         dayQuantity = db.session.query(Dia.Dias.quantidade).filter_by(planoId=planoId, dia=day).first()[0]
         totalQuantity = db.session.query(func.sum(Registro.quantidade)).filter_by(matrizId=matrizId, dataEntrada=dataEntrada).first()[0]
         
-        if totalQuantity is None:
+        if totalQuantity == None:
             totalQuantity = 0
         
         total = dayQuantity - totalQuantity

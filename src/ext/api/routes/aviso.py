@@ -1,7 +1,8 @@
+from datetime import datetime
 from ext.db import avisoCRUD
 from ...db import db
 from flask_restx import Api, Namespace, Resource, fields, reqparse
-from ext.site.model import Aviso
+from ext.site.model.Aviso import Aviso
 from ext.site.model.Aviso import AvisoSchema
 from werkzeug.exceptions import HTTPException
 from werkzeug.exceptions import NotFound
@@ -37,19 +38,24 @@ headers = namespace.parser()
 
 @namespace.route('/insert', methods=['POST'])
 @namespace.expect(headers)
-class CreateConfinamento(Resource):
+class CreateAviso(Resource):
     @namespace.expect(insert_aviso, validate=True)
     def post(self):
         """Cadastra um aviso"""
         try:
             parser = reqparse.RequestParser()
-            parser.add_argument('dataAviso', type=int)
+            parser.add_argument('dataAviso', type=datetime)
             parser.add_argument('confinamentoId', type=int)
             args = parser.parse_args()
-            confinamento = avisoCRUD.cadastrarAviso(args)
-            if not confinamento:
+            
+            aviso = avisoCRUD.cadastrarAviso(Aviso(
+                dataAviso=args['dataAviso'],
+                confinamentoId=args['confinamentoId'],
+            ))
+            
+            if not aviso:
                 raise Exception("Error")
-            return confinamento
+            return aviso
         except Exception as e:
             raise InternalServerError(e.args[0])
 

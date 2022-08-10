@@ -1,4 +1,4 @@
-from ext.site.model.Dia import Dias, DiasSchema
+from ext.site.model.Dia import Dia, DiaSchema
 from ...db import diasCRUD
 from flask_restx import Api, Namespace, Resource, fields, reqparse
 from werkzeug.exceptions import HTTPException

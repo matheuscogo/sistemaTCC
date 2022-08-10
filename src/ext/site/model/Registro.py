@@ -2,12 +2,11 @@ from ...db import db, ma
 
 class Registro(db.Model):
     __tablename__ = "registros"
+    __table_args__ = {"schema":"sistemaTCC"}
     id = db.Column("id", db.Integer, primary_key=True)
     matrizId = db.Column(db.Integer, db.ForeignKey("confinamento.matrizId"))
-    dataEntrada = db.Column("dataEntrada", db.VARCHAR)
-    dataSaida = db.Column("dataSaida", db.VARCHAR)
-    horaEntrada = db.Column("horaEntrada", db.VARCHAR)
-    horaSaida = db.Column("horaSaida", db.VARCHAR)
+    dataEntrada = db.Column("dataEntrada", db.DateTime)
+    dataSaida = db.Column("dataSaida", db.DateTime)
     tempo = db.Column("tempo", db.VARCHAR)
     quantidade = db.Column("quantidade", db.Integer)
 
