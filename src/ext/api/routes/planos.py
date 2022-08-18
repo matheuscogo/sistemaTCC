@@ -1,4 +1,4 @@
-from ...site.model.Plano import PlanoSchema
+from ...site.model import PlanoSchema
 from ...site.model import Plano
 from ...db import db, planosCRUD
 from flask_restx import Api, Namespace, Resource, fields, reqparse

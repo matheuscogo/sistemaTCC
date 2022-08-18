@@ -2,53 +2,46 @@ from ast import arg
 from datetime import datetime
 from re import I
 from xmlrpc.client import ResponseError
-from ..site.model.Inseminacao import Inseminacao
-from ..site.model.Matriz import Matriz
-from ..site.model.Confinamento import Confinamento
-from ..site.model.Plano import Plano
-from ..site.model.Inseminacao import InseminacaoSchema
+from ..site.model import Inseminacao
+from ..site.model import Matriz
+from ..site.model import Confinamento
+from ..site.model import Plano
+from ..site.model import InseminacaoSchema
 from ..db import db
 from werkzeug.wrappers import Response, Request
 import json
 
-def cadastrarInseminacao(args):  # Create
+def cadastrarInseminacao(inseminacao, isNewCiclo):  # Create
     try:
-        matrizId = int(args['matrizId'])
-        planoId = int(args['planoId'])
-        dataInseminacao = args['dataInseminacao']
-        isNewCiclo = args['isNewCiclo']
-
-        dataInseminacao = datetime.strftime(
-            datetime.fromtimestamp(dataInseminacao/1000.0), '%d/%m/%y')
-
-        if not matrizId:
+        if not inseminacao.matrizId:
             raise Exception(ResponseError)
 
-        if not planoId:
+        if not inseminacao.planoId:
             raise Exception(ResponseError)
 
-        if not dataInseminacao:
+        if not inseminacao.dataInseminacao:
             raise Exception(ResponseError)
 
         matriz = db.session.query(Matriz).filter_by(
-            id=matrizId, deleted=False).first()
-        inseminacao = db.session.query(Inseminacao).filter_by(
-            matrizId=matrizId, active=True).first()
+            id=inseminacao.matrizId, deleted=False).first()
+        oldInseminacao = db.session.query(Inseminacao).filter_by(
+            matrizId=inseminacao.matrizId, active=True).first()
         confinamento = db.session.query(Confinamento).filter_by(
-            matrizId=matrizId, active=True).first()
+            matrizId=inseminacao.matrizId, active=True).first()
 
-        if inseminacao:
-            inseminacao.active = False
-            inseminacao.deleted = True
+        if oldInseminacao:
+            oldInseminacao.active = False
+            oldInseminacao.deleted = True
 
         if confinamento:
             confinamento.active = False
             confinamento.deleted = True
             
         newConfinamento = Confinamento(
-            planoId=planoId,
-            matrizId=matrizId,
-            dataConfinamento=dataInseminacao)   
+            planoId=inseminacao.planoId,
+            matrizId=inseminacao.matrizId,
+            dataConfinamento=inseminacao.dataInseminacao
+        )   
         
         db.session.add(newConfinamento)
         db.session.flush()
@@ -58,11 +51,7 @@ def cadastrarInseminacao(args):  # Create
         if isNewCiclo:
             matriz.ciclos = matriz.ciclos + 1
 
-        newInseminacao = Inseminacao(
-            planoId=planoId,
-            matrizId=matrizId,
-            dataInseminacao=dataInseminacao,
-            confinamentoId=newConfinamento.id)
+        newInseminacao = Inseminacao(inseminacao)
         # adicionar uma chave estrangeira na tabela inseminação para saber qual confinamento ela pertence
         db.session.add(newInseminacao)
         db.session.commit()

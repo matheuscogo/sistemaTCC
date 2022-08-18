@@ -1,4 +1,4 @@
-from ext.site.model.Matriz import Matriz, MatrizSchema
+from ext.site.model import Matriz, MatrizSchema
 from ...db import db, matrizCRUD
 from flask_restx import Api, Namespace, Resource, fields, reqparse
 from werkzeug.exceptions import HTTPException
@@ -10,7 +10,7 @@ namespace = Namespace(name='Matrizes', description='Matrizes', path='/matrizes')
 insert_matriz = namespace.model('Dados para criação de uma matriz', {
     'rfid': fields.String(required=True, description='RFID'),
     'numero': fields.String(required=True, description='Número da matriz'),
-    'ciclos': fields.String(required=True, description='Ciclos da matriz')
+    'ciclos': fields.Integer(required=True, description='Ciclos da matriz')
 })
 
 update_matriz = namespace.model('Dados para atualização de matrizes', {
@@ -23,7 +23,7 @@ list_matrizes = namespace.model('Lista de matrizes', {
     'id': fields.String(required=True, description='Identificadores das matrizes'),
     'rfid': fields.String(description='RFID das matrizes'),
     'numero': fields.String(description='Numero das matrizes'),
-    'ciclos': fields.String(description='Ciclos das matrizes')
+    'ciclos': fields.Integer(description='Ciclos das matrizes')
     
 })
 
@@ -49,11 +49,20 @@ class CreateMatriz(Resource):
             parser = reqparse.RequestParser()
             parser.add_argument('numero', type=str)
             parser.add_argument('rfid', type=str)
-            parser.add_argument('ciclos', type=str)
+            parser.add_argument('ciclos', type=int)
             args = parser.parse_args()
-            matriz = matrizCRUD.cadastrarMatriz(args)
+            
+            matriz = Matriz(
+                rfid = args['numero'],
+                numero = args['rfid'],
+                ciclos = args['ciclos'],
+            )
+            
+            matriz = matrizCRUD.cadastrarMatriz(matriz)
+            
             if not matriz:
-                raise Exception("Error")
+                raise Exception("Não foi possivel cadastrar matriz")
+            
             return matriz
         except Exception as e:
             raise InternalServerError(e.args[0])

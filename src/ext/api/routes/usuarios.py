@@ -1,7 +1,7 @@
 from ...db import db
 from flask_restx import Api
 from flask_restx import Namespace, Resource, fields
-from ext.site.model.Matriz import Matriz
+from ext.site.model import Matriz
 from werkzeug.exceptions import HTTPException
 from werkzeug.exceptions import NotFound
 from werkzeug.exceptions import InternalServerError

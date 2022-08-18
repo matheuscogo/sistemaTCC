@@ -4,9 +4,9 @@ class Registro(db.Model):
     __tablename__ = "registros"
     __table_args__ = {"schema":"sistemaTCC"}
     id = db.Column("id", db.Integer, primary_key=True)
-    matrizId = db.Column(db.Integer, db.ForeignKey("confinamento.matrizId"))
-    dataEntrada = db.Column("dataEntrada", db.DateTime)
-    dataSaida = db.Column("dataSaida", db.DateTime)
+    matrizId = db.Column("matriz_id", db.Integer, db.ForeignKey("sistemaTCC.confinamento.matrizId"))
+    dataEntrada = db.Column("data_entrada", db.DateTime)
+    dataSaida = db.Column("data_saida", db.DateTime)
     tempo = db.Column("tempo", db.VARCHAR)
     quantidade = db.Column("quantidade", db.Integer)
 

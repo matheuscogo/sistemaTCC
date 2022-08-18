@@ -1,4 +1,5 @@
-from ext.site.model.Inseminacao import Inseminacao, InseminacaoSchema
+from datetime import datetime
+from ext.site.model import Inseminacao, InseminacaoSchema
 from ...db import db, inseminacaoCRUD
 from flask_restx import Api, Namespace, Resource, fields, reqparse
 from werkzeug.exceptions import HTTPException
@@ -50,12 +51,21 @@ class CreateInseminacao(Resource):
             parser = reqparse.RequestParser()
             parser.add_argument('matrizId', type=int)
             parser.add_argument('planoId', type=int)
-            parser.add_argument('dataInseminacao', type=int)
+            parser.add_argument('dataInseminacao', type=datetime)
             parser.add_argument('isNewCiclo', type=bool)
             args = parser.parse_args()
-            inseminacao = inseminacaoCRUD.cadastrarInseminacao(args)
+            
+            inseminacao = Inseminacao(
+                planoId = args['matrizId'],
+                matrizId = args['planoId'],
+                dataInseminacao = args['dataInseminacao'],
+            )
+            
+            inseminacao = inseminacaoCRUD.cadastrarInseminacao(inseminacao, args['isNewCiclo'])
+            
             if not inseminacao:
                 raise Exception("Error")
+            
             return inseminacao
         except Exception as e:
             raise InternalServerError(e.args[0])

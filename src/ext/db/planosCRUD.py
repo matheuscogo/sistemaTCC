@@ -1,6 +1,6 @@
 from ..site.model import Plano
 from ..site.model import Dia
-from ..site.model.Plano import PlanoSchema
+from ..site.model import PlanoSchema
 from ..db import db
 from werkzeug.wrappers import Response, Request
 import json

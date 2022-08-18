@@ -1,8 +1,9 @@
+from datetime import datetime
 from ext.db import confinamentoCRUD
 from ...db import db
 from flask_restx import Api, Namespace, Resource, fields, reqparse
 from ext.site.model import Confinamento
-from ext.site.model.Confinamento import ConfinamentoSchema
+from ext.site.model import ConfinamentoSchema
 from werkzeug.exceptions import HTTPException
 from werkzeug.exceptions import NotFound
 from werkzeug.exceptions import InternalServerError
@@ -10,7 +11,7 @@ from werkzeug.exceptions import InternalServerError
 namespace = Namespace('Confinamentos', description='Confinamentos', path='/confinamentos')
 
 insert_confinamento = namespace.model('Dados para criação de Matrizes', {
-    'dataConfinamento': fields.Integer(required=True, description='Data de entrada no confinamento'),
+    'dataConfinamento': fields.DateTime(required=True, description='Data de entrada no confinamento'),
     'matrizId': fields.Integer(required=True, description='FK da matriz'),
     'planoId': fields.Integer(required=True, description='FK do plano de alimentação')
 })
@@ -42,13 +43,25 @@ class CreateConfinamento(Resource):
         """Cadastra um confinamento"""
         try:
             parser = reqparse.RequestParser()
-            parser.add_argument('dataConfinamento', type=int)
+            parser.add_argument(
+                'dataConfinamento', 
+                type=lambda s: datetime.strptime(s, '%Y-%m-%dT%H:%M:%S.%fZ')
+            )
             parser.add_argument('matrizId', type=int)
             parser.add_argument('planoId', type=int)
             args = parser.parse_args()
-            confinamento = confinamentoCRUD.cadastrarConfinamento(args)
+            
+            confinamento = Confinamento(
+                planoId = args['planoId'],
+                matrizId = args['matrizId'],
+                dataConfinamento = args['dataConfinamento'],
+            )
+
+            confinamento = confinamentoCRUD.cadastrarConfinamento(confinamento)
+
             if not confinamento:
                 raise Exception("Error")
+            
             return confinamento
         except Exception as e:
             raise InternalServerError(e.args[0])

@@ -1,7 +1,7 @@
 from ...db import db, ma
 
 class Plano(db.Model):
-    __tablename__ = "planos"
+    __tablename__ = 'planos'
     __table_args__ = {"schema":"sistemaTCC"}
     id = db.Column("id", db.Integer, primary_key=True)
     nome = db.Column("nome", db.VARCHAR)

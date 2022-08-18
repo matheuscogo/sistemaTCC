@@ -44,8 +44,8 @@
 
 
 # def iniciarAlimentador():
-#     from ..model.Registro import Registro
-#     from ..model.Matriz import Matriz
+#     from ..model import Registro
+#     from ..model import Matriz
 #     while True:
 #         rc522.wait_for_tag()
 #         (error, tag_type) = rc522.request()

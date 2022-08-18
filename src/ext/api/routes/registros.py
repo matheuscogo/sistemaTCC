@@ -1,4 +1,4 @@
-from ext.site.model.Registro import Registro, RegistroSchema
+from ext.site.model import Registro, RegistroSchema
 from ...db import registroCRUD
 from flask_restx import Api, Namespace, Resource, fields, reqparse
 from werkzeug.exceptions import HTTPException

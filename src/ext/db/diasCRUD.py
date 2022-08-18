@@ -1,6 +1,6 @@
 from sqlalchemy.sql.elements import Null
 from ..site.model import Dia
-from ..site.model.Dia import DiaSchema
+from ..site.model import DiaSchema
 from ..site.model import Dia
 from ..db import db
 from werkzeug.wrappers import Response, Request

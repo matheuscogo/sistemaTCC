@@ -1,16 +1,23 @@
 from ..site.model import Matriz
-from ..site.model.Matriz import MatrizSchema
+from ..site.model import MatrizSchema
 from ..db import db
 from werkzeug.wrappers import Response, Request
 import json
 
-def cadastrarMatriz(args):  # Create
+def cadastrarMatriz(matriz):  # Create
     try:
-        numero = str(args['numero'])
-        rfid = str(args['rfid'])
-        ciclos = str(args['ciclos'])
-        db.session.add(Matriz.Matriz(rfid=rfid, numero=numero, ciclos=ciclos))
+        if matriz.rfid == None:
+            raise Exception("Rfid não repasado para o controlador")
+            
+        if matriz.numero == None:
+            raise Exception("Número não repasado para o controlador")
+            
+        if matriz.ciclos == None:
+            raise Exception("Quantidade de ciclos não repasado para o controlador")
+            
+        db.session.add(matriz)
         db.session.commit()
+        
         return Response(response=json.dumps("{success: true, message: Matriz cadastrada com sucesso!, response: null}"), status=200)
     except BaseException as e:
         return Response(response=json.dumps("{success: false, message: "+ e.args[0] +", response: null}"), status=501)

@@ -1,8 +1,8 @@
 import datetime
 from flask import render_template, request, Blueprint, redirect
 from ext.api import rasp
-from ..model.Matriz import Matriz
-from ..model.Plano import Plano
+from ..model import Matriz
+from ..model import Plano
 from ...db import matrizCRUD, planosCRUD, confinamentoCRUD
 
 
@@ -176,7 +176,7 @@ def cadastrarConfinamento():
 def TESTE():
     from ...db import matrizCRUD, registroCRUD, confinamentoCRUD
     import datetime, time
-    from ..model.Registro import Registro
+    from ..model import Registro
     import RPi.GPIO as GPIO
     from pirc522 import RFID
     

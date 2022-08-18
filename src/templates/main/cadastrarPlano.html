@@ -10,15 +10,14 @@
 <body onload="data_dia_inicio()">
      <h1>{{ title }}</h1>
      <form method="POST" action="cadastrarPlano">
-          Nome:<input id="nome" name="nome">
-          Descrição:<input type="text" name="descricao" id="descricao">
-          Tipo: <select name="tipo" id="tipo">
+          Nome:<input id="nome" name="nome"><br><br>
+          Descrição:<input type="text" name="descricao" id="descricao"><br><br>
+          Tipo: <select name="tipo" id="tipo"><br><br>
                <option value="114">Gestação</option>
                <option value="250">Pré Gestação</option>
                <option>Alternativo</option>
           </select>
-          <input type="submit" name="cadastrarPlano" id="cadastrarPlano" value="Cadastrar">
-          <input type="hidden" name="json" id="json">
+          <input type="hidden" name="json" id="json"><br><br>
      </form>
      {{ retorno }}
      Do dia <select id="select">
@@ -27,6 +26,7 @@
           <option value="" selected disabled hidden>Escolha um dia</option>
      </select> a quantidade de <input id="quantidade"> <button id="btn">Adicionar periodo</button>
      <br><br>
+     <input type="submit" name="cadastrarPlano" id="cadastrarPlano" value="Cadastrar"><br><br>
      <table id="myTable" name="myTable">
           <thead>
                <tr>

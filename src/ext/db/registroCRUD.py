@@ -1,5 +1,5 @@
 from ..site.model import Registro
-from ..site.model.Registro import RegistroSchema
+from ..site.model import RegistroSchema
 from ..db import db
 from werkzeug.wrappers import Response, Request
 from datetime import datetime

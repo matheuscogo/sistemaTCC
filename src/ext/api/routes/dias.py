@@ -1,4 +1,4 @@
-from ext.site.model.Dia import Dia, DiaSchema
+from ext.site.model import Dia, DiaSchema
 from ...db import diasCRUD
 from flask_restx import Api, Namespace, Resource, fields, reqparse
 from werkzeug.exceptions import HTTPException
@@ -46,6 +46,7 @@ class CreateDia(Resource):
             parser.add_argument('plano', type=int)
             parser.add_argument('dia', type=int)
             parser.add_argument('quantidade', type=int)
+            
             args = parser.parse_args()
             dia = diasCRUD.cadastrarDia(args)
             if not dia:

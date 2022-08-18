@@ -6,16 +6,16 @@ from responses import activate, delete
 from ext.site.model import Inseminacao
 from ..site.model import Aviso
 from ..site.model import Registro
-from ..site.model.Confinamento import Confinamento, ConfinamentoSchema
+from ..site.model import Confinamento, ConfinamentoSchema
 from ..db import db
 import datetime
 from werkzeug.wrappers import Response, Request
 from xmlrpc.client import ResponseError
 import json
 from ..site.model import Dia
-from ..site.model.Plano import Plano
-from ..site.model.Matriz import Matriz
-from ..site.model.Registro import Registro
+from ..site.model import Plano
+from ..site.model import Matriz
+from ..site.model import Registro
 from ..db import db
 from sqlalchemy.sql import func
 from datetime import datetime, timedelta
