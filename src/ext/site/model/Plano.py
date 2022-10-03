@@ -3,11 +3,11 @@ from ...db import db, ma
 class Plano(db.Model):
     __tablename__ = 'planos'
     __table_args__ = {"schema":"sistemaTCC"}
-    id = db.Column("id", db.Integer, primary_key=True)
+    id = db.Column("id", db.Integer, primary_key=True, autoincrement=True)
     nome = db.Column("nome", db.VARCHAR)
     descricao = db.Column("descricao", db.VARCHAR)
     tipo = db.Column("tipo", db.VARCHAR)
-    quantidadeDias = db.Column("quantidadeDias", db.Integer)
+    quantidadeDias = db.Column("quantidade_dias", db.Integer)
     deleted = db.Column("deleted", db.Boolean, default=False)
     active = db.Column("active", db.Boolean, default=True)
 

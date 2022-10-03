@@ -1,10 +1,10 @@
 from ..site.model import Matriz
 from ..site.model import MatrizSchema
-from ..db import db
+from . import db
 from werkzeug.wrappers import Response, Request
 import json
 
-def cadastrarMatriz(matriz):  # Create
+def cadastrarParametro(matriz):  # Create
     try:
         if matriz.rfid == None:
             raise Exception("Rfid não repasado para o controlador")
@@ -18,56 +18,56 @@ def cadastrarMatriz(matriz):  # Create
         db.session.add(matriz)
         db.session.commit()
         
-        return Response(response=json.dumps("{success: true, message: Matriz cadastrada com sucesso!, response: null}"), status=200)
+        return Response(response=json.dumps("{success: true, message: Parametro cadastrada com sucesso!, response: null}"), status=200)
     except BaseException as e:
         return Response(response=json.dumps("{success: false, message: "+ e.args[0] +", response: null}"), status=501)
 
-def consultarMatrizes():  # Read
+def consultarParametroes():  # Read
     try:
-        matrizes = db.session.query(Matriz).all()
+        matrizes = db.session.query(Parametro).all()
         return matrizes
     except BaseException as e:
         return Response(response=json.dumps("{success: false, message: "+ e.args[0] +", response: null}"), status=501)
 
 
-def consultarMatriz(id):  # Read
+def consultarParametro(id):  # Read
     try:
-        matriz = db.session.query(Matriz.Matriz).filter_by(id=id).first()
+        matriz = db.session.query(Parametro.Parametro).filter_by(id=id).first()
         if not matriz:
-            raise Exception(MatrizSchema().dump(matriz))
-        return MatrizSchema().dump(matriz)
+            raise Exception(ParametroSchema().dump(matriz))
+        return ParametroSchema().dump(matriz)
     except Exception as e:
         return e.args[0]
     
-def getMatrizByRfid(rfid):  # Read
+def getParametroByRfid(rfid):  # Read
     try:
-        matriz = db.session.query(Matriz.Matriz).filter_by(rfid=rfid).first()
+        matriz = db.session.query(Parametro.Parametro).filter_by(rfid=rfid).first()
         if not matriz:
-            raise Exception(MatrizSchema().dump(matriz))
-        return MatrizSchema().dump(matriz)
+            raise Exception(ParametroSchema().dump(matriz))
+        return ParametroSchema().dump(matriz)
     except Exception as e:
         return e.args[0]
 
     
-def atualizarMatriz(args):  # Update
+def atualizarParametro(args):  # Update
     try:
         id=int(args['id'])
         rfid=str(args['rfid'])
         numero=int(args['numero'])
         ciclos=int(args['ciclos'])
-        matriz = db.session.query(Matriz.Matriz).filter_by(id=id).first()
+        matriz = db.session.query(Parametro).filter_by(id=id).first()
         matriz.rfid = rfid
         matriz.numero = numero
         matriz.ciclos = ciclos
         db.session.commit()
-        return Response(response=json.dumps("{success: true, message: Matriz atualizada com sucesso!, response: null}"), status=200)
+        return Response(response=json.dumps("{success: true, message: Parametro atualizada com sucesso!, response: null}"), status=200)
     except BaseException as e:
         return Response(response=json.dumps("{success: false, message: " + e.args[0] + ", response: null}"), status=501)
 
 
-def excluirMatriz(id):  # Delete
+def excluirParametro(id):  # Delete
     try:
-        matriz = db.session.query(Matriz.Matriz).filter_by(id=id).first()
+        matriz = db.session.query(Parametro).filter_by(id=id).first()
         db.session.delete(matriz)
         db.session.commit()
         return Response(response=json.dumps("{success: true, message: Matriz excluida com sucesso!, response: null}"), status=200)

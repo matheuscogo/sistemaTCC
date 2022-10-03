@@ -11,7 +11,7 @@ from werkzeug.exceptions import InternalServerError
 namespace = Namespace('Avisos', description='Avisos', path='/avisos')
 
 insert_aviso = namespace.model('Dados para criação de um aviso', {
-    'dataAviso': fields.Integer(required=True, description='Data de criação do aviso'),
+    'dataAviso': fields.DateTime(required=True, description='Data de criação do aviso'),
     'confinamentoId': fields.Integer(required=True, description='FK do confinamento')
 })
 
@@ -22,8 +22,7 @@ update_aviso = namespace.model('Dados para atualizar o aviso', {
 
 list_avisos = namespace.model('Lista de avisos', {
     'id': fields.Integer(required=True, description='ID do aviso'),
-    'confinamentoId': fields.String(required=True, description='FK da confinamento'),
-    'dataAviso': fields.String(required=True, description='Data da criação do registro do aviso'),
+    'dataAviso': fields.DateTime(required=True, description='Data da criação do registro do aviso'),
     'separar': fields.String(required=True, description='Flag para separação'),
     'matrizDescription': fields.String(required=True, description='Descrição da matriz confinada'),
     'separarDescription': fields.String(required=True, description='Descrição da flag separar'),
@@ -44,7 +43,7 @@ class CreateAviso(Resource):
         """Cadastra um aviso"""
         try:
             parser = reqparse.RequestParser()
-            parser.add_argument('dataAviso', type=datetime)
+            parser.add_argument('dataAviso', type=lambda s: datetime.strptime(s, '%Y-%m-%dT%H:%M:%S.%fZ'))
             parser.add_argument('confinamentoId', type=int)
             args = parser.parse_args()
             

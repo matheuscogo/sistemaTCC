@@ -11,7 +11,7 @@ namespace = Namespace(name='Inseminação', description='Inseminação', path='/
 insert_inseminacao = namespace.model('Dados para criação de uma inseminação', {
     'matrizId': fields.Integer(required=True, description='ID da inseminação'),
     'planoId': fields.Integer(required=True, description='Plano para inseminação'),
-    'dataInseminacao': fields.Integer(required=True, description='Data da inseminação'),
+    'dataInseminacao': fields.DateTime(required=True, description='Data da inseminação'),
     'isNewCiclo': fields.Boolean(required=True, description='isNewCiclo')
 })
 
@@ -19,14 +19,14 @@ update_inseminacao = namespace.model('Dados para atualização de inseminações
     'id': fields.Integer(required=True, description='ID da inseminação'),
     'matrizId': fields.Integer(required=True, description='ID da inseminação'),
     'planoId': fields.Integer(required=True, description='Plano para inseminação'),
-    'dataInseminacao': fields.String(required=True, description='Data da inseminação'),
+    'dataInseminacao': fields.DateTime(required=True, description='Data da inseminação'),
 })
 
 list_inseminacoes = namespace.model('Lista de inseminacaoes', {
     'id': fields.String(required=True, description='Identificadores das inseminacaoes'),
     'matrizDescription': fields.String(required=True, description='ID da inseminação'),
     'planoDescription': fields.String(required=True, description='Plano para inseminação'),
-    'dataInseminacao': fields.String(required=True, description='Data da inseminação')    
+    'dataInseminacao': fields.DateTime(required=True, description='Data da inseminação')    
 })
 
 list_inseminacaoes_response = namespace.model('Resposta da lista de inseminacaoes', {
@@ -51,13 +51,13 @@ class CreateInseminacao(Resource):
             parser = reqparse.RequestParser()
             parser.add_argument('matrizId', type=int)
             parser.add_argument('planoId', type=int)
-            parser.add_argument('dataInseminacao', type=datetime)
+            parser.add_argument('dataInseminacao', type=lambda s: datetime.strptime(s, '%Y-%m-%dT%H:%M:%S.%fZ'))
             parser.add_argument('isNewCiclo', type=bool)
             args = parser.parse_args()
             
             inseminacao = Inseminacao(
-                planoId = args['matrizId'],
-                matrizId = args['planoId'],
+                planoId = args['planoId'],
+                matrizId = args['matrizId'],
                 dataInseminacao = args['dataInseminacao'],
             )
             

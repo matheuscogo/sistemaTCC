@@ -35,8 +35,8 @@ def cadastrarPlano(plano, dias):  # Create
                 dia1 = i["dias"][0]
                 dia2 = i["dias"][1]
                 for y in range(dia1, (dia2+1)):
-                    print("DIAS -> " + str(y))
-                    db.session.add(Dia.Dias(planoId=int(plano.id), dia = y, quantidade=quantidade))
+                    print("DIAS -> " + str(y) + " quantidade: " + str(quantidade))
+                    db.session.add(Dia(planoId=int(plano.id), dia = y, quantidade=quantidade))
                     db.session.commit()
             return ""
         else:
@@ -47,7 +47,7 @@ def cadastrarPlano(plano, dias):  # Create
 
 def consultarPlanos():  # Read
     try:
-        planos = db.session.query(Plano.Plano).all()
+        planos = db.session.query(Plano).all()
         return planos
     except BaseException as e:
         return Response(response=json.dumps("{success: false, message: " + e.args[0] + ", response: null}"), status=501)
@@ -96,7 +96,7 @@ def excluirPlano(id):  # Delete
 
 def exists(nome):
     exists = db.session.query(db.exists().where(
-        Plano.Plano.nome == nome)).scalar()
+        Plano.nome == nome)).scalar()
     print(str(exists))
     if exists:
         return False

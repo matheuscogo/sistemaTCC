@@ -24,9 +24,9 @@ def cadastrarInseminacao(inseminacao, isNewCiclo):  # Create
 
         matriz = db.session.query(Matriz).filter_by(
             id=inseminacao.matrizId, deleted=False).first()
-        oldInseminacao = db.session.query(Inseminacao).filter_by(
-            matrizId=inseminacao.matrizId, active=True).first()
         confinamento = db.session.query(Confinamento).filter_by(
+            matrizId=inseminacao.matrizId, active=True).first()
+        oldInseminacao = db.session.query(Inseminacao).filter_by(
             matrizId=inseminacao.matrizId, active=True).first()
 
         if oldInseminacao:
@@ -46,12 +46,12 @@ def cadastrarInseminacao(inseminacao, isNewCiclo):  # Create
         db.session.add(newConfinamento)
         db.session.flush()
         
-        print(newConfinamento.id)
-
+        inseminacao.confinamentoId = newConfinamento.id 
+        
         if isNewCiclo:
             matriz.ciclos = matriz.ciclos + 1
 
-        newInseminacao = Inseminacao(inseminacao)
+        newInseminacao = inseminacao
         # adicionar uma chave estrangeira na tabela inseminação para saber qual confinamento ela pertence
         db.session.add(newInseminacao)
         db.session.commit()

@@ -55,7 +55,7 @@ def consultarConfinamento(id):  # Read
 
 def consultarConfinamentos():  # Read
     try:
-        response = db.session.query(Confinamento.Confinamento).filter_by(active=True).all()
+        response = db.session.query(Confinamento).filter_by(active=True).all()
         
         confinamentos = []
 

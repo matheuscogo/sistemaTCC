@@ -40,9 +40,9 @@ def cadastrarRegistro(args):  # Create
 
 def consultarRegistros():  # Read
     try:
-        registros = db.session.query(Registro.Registro).all()
-        if not registros:
-            raise BaseException("Erro ao consultar no banco de dados")
+        registros = db.session.query(Registro).all()
+        # if not registros:
+        #     raise BaseException("Erro ao consultar no banco de dados")
         return registros
     except BaseException as e:
         return Response(response=json.dumps("{success: false, message: " + e.args[0] + ", response: null}"), status=501)
