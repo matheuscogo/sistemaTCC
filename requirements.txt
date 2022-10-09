@@ -10,9 +10,9 @@ Flask-WTF
 flask-bcrypt
 flask-restx
 Werkzeug
+werkzeug==2.1.2
 SQLAlchemy
 marshmallow-sqlalchemy
 sqlite-web
 flask-cors
-RPi.GPIO==0.6.3
--e git+https://github.com/lthiery/SPI-Py.git#egg=spi-pi
+
