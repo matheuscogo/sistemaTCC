@@ -1,18 +1,11 @@
-flask
-flask-Migrate
+Flask==2.1.2
+flask-sqlalchemy==2.5.1
+flask_migrate
 flask-marshmallow
-Flask_marshmallow
-Flask
-Flask-Migrate
-flask-marshmallow
-Flask-SQLAlchemy
-Flask-WTF
-flask-bcrypt
-flask-restx
-Werkzeug
-werkzeug==2.1.2
+flask-restx >= 0.5.1 
+Werkzeug <= 2.1.2
+flask-cors
 SQLAlchemy
 marshmallow-sqlalchemy
-sqlite-web
-flask-cors
-
+responses
+psycopg2-binary
