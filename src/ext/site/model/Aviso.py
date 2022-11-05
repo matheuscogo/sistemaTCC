@@ -2,7 +2,7 @@ from ...db import db, ma
 
 class Aviso(db.Model):
     __tablename__ = "avisos"
-    __table_args__ = {"schema":"sistemaTCC"}
+    # __table_args__ = {"schema":"public"}
     id = db.Column("id", db.Integer, primary_key=True, autoincrement=True)
     confinamentoId = db.Column("confinamento_id",db.Integer, db.ForeignKey("sistemaTCC.confinamentos.id"))
     dataAviso = db.Column("data_aviso", db.DateTime)

@@ -2,7 +2,7 @@ from ...db import db, ma
 
 class Parametro(db.Model):
     __tablename__ = 'parameters'
-    __table_args__ = {"schema":"sistemaTCC"}
+    # __table_args__ = {"schema":"public"}
     id = db.Column("id", db.Integer, primary_key=True, autoincrement=True)
     motorOpen = db.Column("rfid", db.Boolean)
     motorClose = db.Column("rfid", db.Boolean)

@@ -1,8 +1,7 @@
 import datetime
 from flask import render_template, request, Blueprint, redirect
-from ext.api import rasp
-from ..model import Matriz
-from ..model import Plano
+from ..model.Matriz import Matriz
+from ..model.Plano import Plano
 from ...db import matrizCRUD, planosCRUD, confinamentoCRUD
 
 
@@ -82,17 +81,15 @@ def excluirMatriz():  # Excluir Matriz
         return render_template("index.html", **templateData)
 
 
-@bp_controller.route('/cadastrarPlano', methods=['POST'])
+@bp_controller.route('/cadastrarPlano', methods=['POST', 'GET'])
 def cadastrarPlano():  # Cadastrar Plano
     try:
-        if planosCRUD.exists(request.form.get("nome")) != None:
-            plano = Plano(
-                nome=request.form.get("nome"),
+        if planosCRUD.exists(request.form.get("nome")):
+            plano = Plano(nome=request.form.get("nome"),
                           descricao=request.form.get("descricao"),
                           tipo=request.form.get("tipo"),
-                          quantidadeDias=int(request.form.get("tipo")),
-                          active=1
-            )
+                          quantidadeDias=request.form.get("quantidadeDias"),
+                          ativo=1)
             json_list = str(('{"plano" : [' + request.form.get("json") + ']}'))
             planosCRUD.cadastrarPlano(plano, json_list)
             templateData = {
@@ -101,7 +98,7 @@ def cadastrarPlano():  # Cadastrar Plano
                 'color': 'green',
                 'aviso': "Plano de alimentação cadastrado com sucesso!"
             }
-            return redirect("http://localhost:3000/planos")
+            return render_template("main/planos.html", **templateData)
         else:
             templateData = {
                 'title': 'Sistema de gerenciamento de matrizes',
@@ -176,7 +173,7 @@ def cadastrarConfinamento():
 def TESTE():
     from ...db import matrizCRUD, registroCRUD, confinamentoCRUD
     import datetime, time
-    from ..model import Registro
+    from ..model.Registro import Registro
     import RPi.GPIO as GPIO
     from pirc522 import RFID
     

@@ -32,7 +32,23 @@ def consultarMatrizes():  # Read
 
 def consultarMatriz(id):  # Read
     try:
-        matriz = db.session.query(Matriz.Matriz).filter_by(id=id).first()
+        matriz = db.session.query(Matriz).filter_by(id=id, deleted=False).first()
+        return MatrizSchema().dump(matriz)
+    except Exception as e:
+        return e.args[0]
+    
+def getMatriz(id):  # Read
+    try:
+        matriz = db.session.query(Matriz).filter_by(id=id).first()
+        if not matriz:
+            raise Exception(MatrizSchema().dump(matriz))
+        return MatrizSchema().dump(matriz)
+    except Exception as e:
+        return e.args[0]
+    
+def getMatrizByRfid(rfid):  # Read
+    try:
+        matriz = db.session.query(Matriz).filter_by(rfid=rfid).first()
         if not matriz:
             raise Exception(MatrizSchema().dump(matriz))
         return MatrizSchema().dump(matriz)

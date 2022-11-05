@@ -2,7 +2,7 @@ from ...db import db, ma
 
 class Inseminacao(db.Model):
     __tablename__ = "inseminacoes"
-    __table_args__ = {"schema":"sistemaTCC"}
+    # __table_args__ = {"schema":"public"}
     id = db.Column("id", db.Integer, primary_key=True, autoincrement=True)
     planoId = db.Column("plano_id", db.Integer, db.ForeignKey("sistemaTCC.planos.id"))
     matrizId = db.Column("matriz_id", db.Integer, db.ForeignKey("sistemaTCC.matrizes.id"))

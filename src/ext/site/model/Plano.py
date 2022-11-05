@@ -2,7 +2,7 @@ from ...db import db, ma
 
 class Plano(db.Model):
     __tablename__ = 'planos'
-    __table_args__ = {"schema":"sistemaTCC"}
+    # __table_args__ = {"schema":"public"}
     id = db.Column("id", db.Integer, primary_key=True, autoincrement=True)
     nome = db.Column("nome", db.VARCHAR)
     descricao = db.Column("descricao", db.VARCHAR)

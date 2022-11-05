@@ -21,7 +21,7 @@ update_plano = namespace.model('Dados para atualização de um plano', {
     'descricao': fields.String(required=True, description='Descrição do plano de alimentação'),
     'tipo': fields.Integer(required=True, description='Tipo do plano de alimentação'),
     'quantidadeDias': fields.Integer(required=True, description='Quantidade de dias do plano de alimentação'),
-    'ativo': fields.Boolean(required=True, description='Verifica se o plano de alimentação está ativo ou não')
+    'active': fields.Boolean(required=True, description='Verifica se o plano de alimentação está ativo ou não')
 })
 
 get_plano_response = namespace.model('Response para plano de alimentação', {
@@ -29,7 +29,7 @@ get_plano_response = namespace.model('Response para plano de alimentação', {
     'descricao': fields.String(required=True, description='Descrição do plano de alimentação'),
     'tipo': fields.Integer(required=True, description='Tipo do plano de alimentação'),
     'quantidadeDias': fields.Integer(required=True, description='Quantidade de dias do plano de alimentação'),
-    'ativo': fields.Boolean(required=True, description='Verifica se o plano de alimentação está ativo ou não')
+    'active': fields.Boolean(required=True, description='Verifica se o plano de alimentação está ativo ou não')
 })
 
 list_planos = namespace.model('Lista de planos de alimentação', {
@@ -38,7 +38,7 @@ list_planos = namespace.model('Lista de planos de alimentação', {
     'descricao': fields.String(required=True, description='Descrição do plano de alimentação'),
     'tipo': fields.Integer(required=True, description='Tipo do plano de alimentação'),
     'quantidadeDias': fields.Integer(required=True, description='Quantidade de dias do plano de alimentação'),
-    'ativo': fields.Boolean(required=True, description='Verifica se o plano de alimentação está ativo ou não')   
+    'active': fields.Boolean(required=True, description='Verifica se o plano de alimentação está ativo ou não')   
 })
 
 list_planos_response = namespace.model('Response para lista de planos', {
