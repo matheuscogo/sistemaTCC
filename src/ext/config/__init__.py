@@ -6,7 +6,7 @@ def init_app(app):
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
     app.config['CORS_HEADERS'] = "Content-Type"
     # app.config['CORS_RESOURCES'] = {r"/api/v1/*": {"origins": "http://localhost:3000/*"}}
-    app.config['CORS_RESOURCES'] = {r"/api/v1/*": {"origins": "http://http://matheuscogo.pythonanywhere.com//*"}}
+    app.config['CORS_RESOURCES'] = {r"/api/v1/*": {"origins": "http://http://matheuscogo.pythonanywhere.com/*"}}
     # app.config['CORS_RESOURCES'] = {r"/api/v1/*": {"origins": "http://localhost:3000/*"}}
     # app.config['CORS_RESOURCES'] = {r"/api/v1/*": {"origins": "http://192.168.5.1:3000/*"}}
     app.config["CORS_ALLOW_HEADERS"] = "*"
