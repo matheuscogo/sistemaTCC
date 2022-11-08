@@ -14,7 +14,7 @@ insert_dia = namespace.model('Dados para criação de um dia', {
     'quantidade': fields.Integer(required=True, description='Quantidade de ração para esse dia de confinamento')
 })
 
-update_dia = namespace.model('Dados para atualização de matrizes', {
+update_dia = namespace.model('Dados para atualização de um dia', {
     'id': fields.Integer(required=True, description='ID do dia'),
     'plano': fields.Integer(required=True, description='FK do plano de alimentação'),
     'dia': fields.Integer(required=True, description='Dias em confinamento'),

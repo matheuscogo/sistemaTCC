@@ -14,9 +14,10 @@ insert_matriz = namespace.model('Dados para criação de uma matriz', {
 })
 
 update_matriz = namespace.model('Dados para atualização de matrizes', {
-    'id': fields.Integer(required=True, description='ID da matriz'),
+    'rfid': fields.String(description='RFID das matrizes'),
     'numero': fields.String(required=True, description='RFID'),
-    'ciclos': fields.Integer(required=True, description='Ciclos da matriz')
+    'ciclos': fields.Integer(required=True, description='Ciclos da matriz'),
+    'deleted': fields.Boolean(required=True, description='Flag que verifica se matriz está deleteada')
 })
 
 list_matrizes = namespace.model('Lista de matrizes', {
@@ -67,20 +68,21 @@ class CreateMatriz(Resource):
         except Exception as e:
             raise InternalServerError(e.args[0])
 
-@namespace.route('/update/')
+@namespace.route('/update/<int:id>')
+@namespace.param('id')
 @namespace.expect(headers)
 class UpdateMatriz(Resource):
     @namespace.expect(update_matriz, validate=True)
-    def put(self):
-        """Atualiza uma matriz"""
+    def put(self, id):
+        """Atualiza uma matriz pelo id"""
         try:
             parser = reqparse.RequestParser()
-            parser.add_argument('id', type=int)
-            parser.add_argument('numero', type=int)
+            parser.add_argument('numero', type=str)
             parser.add_argument('rfid', type=str)
             parser.add_argument('ciclos', type=int)
+            parser.add_argument('deleted', type=bool)
             args = parser.parse_args()
-            matriz = matrizCRUD.atualizarMatriz(args)
+            matriz = matrizCRUD.atualizarMatriz(id, args)
             if not matriz:
                 raise Exception("Error")
             return matriz

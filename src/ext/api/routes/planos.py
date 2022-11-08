@@ -21,7 +21,8 @@ update_plano = namespace.model('Dados para atualização de um plano', {
     'descricao': fields.String(required=True, description='Descrição do plano de alimentação'),
     'tipo': fields.Integer(required=True, description='Tipo do plano de alimentação'),
     'quantidadeDias': fields.Integer(required=True, description='Quantidade de dias do plano de alimentação'),
-    'active': fields.Boolean(required=True, description='Verifica se o plano de alimentação está ativo ou não')
+    'active': fields.Boolean(required=True, description='Verifica se o plano de alimentação está ativo ou não'),
+    'deleted': fields.Boolean(required=True, description='Verifica se o plano de alimentação está deletado ou não')   
 })
 
 get_plano_response = namespace.model('Response para plano de alimentação', {
@@ -38,7 +39,8 @@ list_planos = namespace.model('Lista de planos de alimentação', {
     'descricao': fields.String(required=True, description='Descrição do plano de alimentação'),
     'tipo': fields.Integer(required=True, description='Tipo do plano de alimentação'),
     'quantidadeDias': fields.Integer(required=True, description='Quantidade de dias do plano de alimentação'),
-    'active': fields.Boolean(required=True, description='Verifica se o plano de alimentação está ativo ou não')   
+    'active': fields.Boolean(required=True, description='Verifica se o plano de alimentação está ativo ou não'),
+    'deleted': fields.Boolean(required=True, description='Verifica se o plano de alimentação está deletado ou não')   
 })
 
 list_planos_response = namespace.model('Response para lista de planos', {
@@ -72,7 +74,7 @@ class CreatePlano(Resource):
 @namespace.expect(headers)
 class UpdatePlano(Resource):
     @namespace.expect(update_plano, validate=True)
-    def put(self):
+    def put(self, id):
         """Atualiza uma plano"""
         try:
             parser = reqparse.RequestParser()
@@ -80,8 +82,10 @@ class UpdatePlano(Resource):
             parser.add_argument('descricao', type=str)
             parser.add_argument('tipo', type=int)
             parser.add_argument('quantidadeDias', type=int)
+            parser.add_argument('active', type=bool)
+            parser.add_argument('deleted', type=bool)
             args = parser.parse_args()
-            plano = planosCRUD.atualizarPlano(args)
+            plano = planosCRUD.atualizarPlano(id, args)
             if not plano:
                 raise Exception("Error")
             return plano
@@ -103,7 +107,7 @@ class GetPlano(Resource):
 
 @namespace.route('/', doc={"description": 'Lista todos os matrizes'})
 @namespace.expect(headers)
-class ListEpisodes(Resource):
+class ListPlanos(Resource):
     @namespace.marshal_with(list_planos_response)
     def get(self):
         """Lista todos os planos de alimentação"""

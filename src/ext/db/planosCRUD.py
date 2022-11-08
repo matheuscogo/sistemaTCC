@@ -47,39 +47,42 @@ def cadastrarPlano(plano, dias):  # Create
 
 def consultarPlanos():  # Read
     try:
-        planos = db.session.query(Plano).all()
+        planos = db.session.query(Plano).filter_by(deleted=False).all()
         return planos
     except BaseException as e:
         return Response(response=json.dumps("{success: false, message: " + e.args[0] + ", response: null}"), status=501)
     
 def consultarPlano(id): # Read
     try:
-        plano = db.session.query(Plano.Plano).filter_by(id=id).first()
+        plano = db.session.query(Plano).filter_by(id=id, deleted=False).first()
         return PlanoSchema().dump(plano)
     except Exception as e:
         return Response(response=json.dumps("{success: false, message: " + e.args[0] + ", response: null}"), status=501)
 
-def atualizarPlano(args):  # Update
+def atualizarPlano(id, args):  # Update
     try:
-        id = int(args['id'])
         nome = str(args['nome'])
         descricao = str(args['descricao'])
         tipo = int(args['tipo'])
         quantidadeDias = int(args['quantidadeDias'])
-        ativo = args['ativo']
+        active = bool(args['active'])
+        deleted = bool(args['deleted'])
 
-        if(ativo == "true"):
-            ativo = True
-        else:
-            ativo = False
+        plano = db.session.query(Plano).filter_by(id=id, deleted=False).first()
         
-        plano = db.session.query(Plano.Plano).filter_by(id=id).first()
+        if not plano:
+            raise Exception(PlanoSchema().dump(plano))
+        
         plano.nome = nome
         plano.descricao = descricao
         plano.tipo = tipo
         plano.quantidadeDias = quantidadeDias
-        plano.ativo = ativo
+        plano.active = active
+        plano.deleted = deleted
+        
+        db.session.add(plano)
         db.session.commit()
+        
         return Response(response=json.dumps("{success: true, message: Plano atualizado com sucesso!, response: null}"), status=200)
     except BaseException as e:
         return Response(response=json.dumps("{success: false, message: " + e.args[0] + ", response: null}"), status=501)
@@ -87,9 +90,16 @@ def atualizarPlano(args):  # Update
 
 def excluirPlano(id):  # Delete
     try:
-        plano = db.session.query(Plano.Plano).filter_by(id=id).first()
-        db.session.delete(plano)
+        plano = db.session.query(Plano).filter_by(id=id, deleted=False).first()
+        
+        if not plano:
+            raise Exception(PlanoSchema().dump(plano))
+        
+        plano.deleted = True
+        
+        db.session.add(plano)
         db.session.commit()
+        
         return Response(response=json.dumps("{success: true, message: Plano excluido com sucesso!, response: null}"), status=200)
     except BaseException as e:
         return Response(response=json.dumps("{success: false, message: "+ e.args[0] +", response: null}"), status=501)
