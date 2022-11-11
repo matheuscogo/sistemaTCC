@@ -32,10 +32,11 @@ def cadastrarConfinamento(confinamento):  # Create
         if not confinamento.dataConfinamento:
             raise Exception(ResponseError)
 
-        oldConfinamento = db.session.query(Confinamento).filter_by(matrizId=confinamento.matrizId, active=True).first()
+        oldConfinamento = db.session.query(Confinamento).filter_by(matrizId=confinamento.matrizId, active=True, deleted=False).first()
 
         if oldConfinamento != None:
             oldConfinamento.active = False
+            oldConfinamento.deleted = True
             db.session.add(oldConfinamento)
 
         db.session.add(confinamento)
@@ -48,21 +49,45 @@ def cadastrarConfinamento(confinamento):  # Create
 
 def consultarConfinamento(id):  # Read
     try:
-        confinamento = db.session.query(Confinamento).filter_by(id=id, active=True).first()
+        confinamento = db.session.query(Confinamento).filter_by(id=id, deleted=False).first()
         return ConfinamentoSchema().dump(confinamento)
     except BaseException as e:
         return str(e)
 
 def consultarConfinamentos():  # Read
     try:
-        response = db.session.query(Confinamento).filter_by(active=True).all()
+        response = db.session.query(
+            Confinamento.id,
+            Confinamento.dataConfinamento,
+            Matriz.numero.label('numeroMatriz'),
+            Confinamento.matrizId.label('matrizId'),
+            Plano.nome.label('planoNome'),
+            Plano.id.label('planoId'),
+            Confinamento.active
+        ).join(Matriz).join(Plano).filter(
+            Confinamento.deleted==False, 
+            Confinamento.active==True,
+            Matriz.deleted==False,
+            Plano.deleted==False
+        ).all()
         
         confinamentos = []
 
         for confinamento in response:
-            matrizDescription = db.session.query(Matriz).filter_by(id=int(confinamento.matrizId), deleted=False).first()
-            planoDescription = db.session.query(Plano).filter_by(id=int(confinamento.planoId), active=True, deleted=False).first()
-            obj = {"id": confinamento.id, "planoDescription": planoDescription.nome, "matrizDescription": matrizDescription.rfid, "dataConfinamento": confinamento.dataConfinamento}
+            obj = {
+                "id": confinamento.id, 
+                "plano": {
+                    'description': confinamento.planoNome,
+                    'value': confinamento.planoId
+                }, 
+                "matriz": {
+                    'description': confinamento.numeroMatriz,
+                    'value': confinamento.matrizId
+                }, 
+                "dataConfinamento": confinamento.dataConfinamento,
+                "active": confinamento.active
+            }
+            
             confinamentos.append(obj)
             
         return confinamentos
@@ -75,20 +100,29 @@ def atualizarConfinamento(args):
         dataConfinamento = args['dataConfinamento']
         plano = args['plano']
         matriz = args['matriz']
+        
         confinamento = db.session.query(Confinamento).filter_by(id=id).first()
+        
         confinamento.dataConfinamento = dataConfinamento
         confinamento.matriz = matriz
         confinamento.plano = plano
+        
+        db.session.add(confinamento)
         db.session.commit()
+        
         return Response(response=json.dumps("{success: true, message: Confinamento atualizado com sucesso!, response: null}"), status=200)
     except BaseException as e:
         return Response(response=json.dumps("{success: false, message: " + e.args[0] + ", response: null}"), status=501)
 
 def excluirConfinamento(id):  # Delete
     try:
-        confinameto = db.session.query(Confinamento).filter_by(id=id).first()
-        db.session.delete(confinameto)
+        confinameto = db.session.query(Confinamento).filter_by(id=id, deleted=False).first()
+        
+        confinameto.deleted = True
+        
+        db.session.add(confinameto)
         db.session.commit()
+        
         return Response(response=json.dumps("{success: true, message: Confinameto excluido com sucesso!, response: null}"), status=200)
     except BaseException as e:
         return Response(response=json.dumps("{success: false, message: "+ e.args[0] +", response: null}"), status=501)
@@ -96,7 +130,7 @@ def excluirConfinamento(id):  # Delete
 
 def getConfinamentoByMatriz(matrizId):
     try:
-        confinamento = db.session.query(Confinamento.Confinamento).filter_by(matrizId=matrizId, active=True).first()
+        confinamento = db.session.query(Confinamento.Confinamento).filter_by(matrizId=matrizId, active=True, deleted=False).first()
         return ConfinamentoSchema().dump(confinamento)
     except BaseException as e:
         return str(e)

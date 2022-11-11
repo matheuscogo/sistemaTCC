@@ -64,19 +64,45 @@ def cadastrarInseminacao(inseminacao, isNewCiclo):  # Create
 
 def consultarInseminacoes():  # Read
     try:
-        response = db.session.query(Inseminacao).filter_by(
-            deleted=False, active=True).all()
+        response = db.session.query(
+            Inseminacao.id,
+            Inseminacao.dataInseminacao,
+            Matriz.numero.label('numeroMatriz'),
+            Inseminacao.matrizId.label('matrizId'),
+            Plano.nome.label('planoNome'),
+            Plano.id.label('planoId'),
+            # Confinamento.id,
+            Inseminacao.active
+        ).join(Matriz).join(Plano).filter(
+            Inseminacao.deleted==False, 
+            Inseminacao.active==True,
+            Matriz.deleted==False,
+            Plano.deleted==False
+        ).all()
+                
         inseminacoes = []
 
         for inseminacao in response:
-            matrizDescription = db.session.query(Matriz).filter_by(
-                id=int(inseminacao.matrizId), deleted=False).first()
-            planoDescription = db.session.query(Plano).filter_by(
-                id=int(inseminacao.planoId), active=True, deleted=False).first()
-            obj = {"id": inseminacao.id, "planoDescription": planoDescription.nome,
-                   "matrizDescription": matrizDescription.rfid, "dataInseminacao": inseminacao.dataInseminacao}
+            obj = {
+                "id": inseminacao.id, 
+                # "confinamento": {
+                #     'description': inseminacao.dataConfinamento,
+                #     'value': inseminacao.confinamentoId
+                # }, 
+                "plano": {
+                    'description': inseminacao.planoNome,
+                    'value': inseminacao.planoId
+                }, 
+                "matriz": {
+                    'description': inseminacao.numeroMatriz,
+                    'value': inseminacao.matrizId
+                }, 
+                "dataInseminacao": inseminacao.dataInseminacao,
+                "active": inseminacao.active
+            }
+            
             inseminacoes.append(obj)
-
+            
         return inseminacoes
     except BaseException as e:
         return Response(response=json.dumps("{success: false, message: " + e.args[0] + ", response: null}"), status=501)

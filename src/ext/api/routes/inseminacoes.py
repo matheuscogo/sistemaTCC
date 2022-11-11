@@ -6,7 +6,7 @@ from werkzeug.exceptions import HTTPException
 from werkzeug.exceptions import NotFound
 from werkzeug.exceptions import InternalServerError
 
-namespace = Namespace(name='Inseminação', description='Inseminação', path='/inseminacao')
+namespace = Namespace(name='Inseminação', description='Inseminação', path='/inseminacoes')
 
 insert_inseminacao = namespace.model('Dados para criação de uma inseminação', {
     'matrizId': fields.Integer(required=True, description='ID da inseminação'),
@@ -20,13 +20,17 @@ update_inseminacao = namespace.model('Dados para atualização de inseminações
     'matrizId': fields.Integer(required=True, description='ID da inseminação'),
     'planoId': fields.Integer(required=True, description='Plano para inseminação'),
     'dataInseminacao': fields.DateTime(required=True, description='Data da inseminação'),
+    'active': fields.Boolean(required=True, description='Verifica se a inseminação está ativo ou não'),
+    'deleted': fields.Boolean(required=True, description='Flag que verifica se inseminação está deleteada')
 })
 
 list_inseminacoes = namespace.model('Lista de inseminacaoes', {
     'id': fields.String(required=True, description='Identificadores das inseminacaoes'),
-    'matrizDescription': fields.String(required=True, description='ID da inseminação'),
-    'planoDescription': fields.String(required=True, description='Plano para inseminação'),
-    'dataInseminacao': fields.DateTime(required=True, description='Data da inseminação')    
+    'dataInseminacao': fields.DateTime(required=True, description='Data da inseminação'),
+    'matriz': fields.Nested({'description': fields.String, 'value': fields.String}, required=True, description='FK da matriz'),
+    'plano': fields.Nested({'description': fields.String, 'value': fields.String}, required=True, description='FK do plano de alimentação'),
+    'active': fields.Boolean(required=True, description='Verifica se a inseminação está ativo ou não'),
+    'deleted': fields.Boolean(required=True, description='Flag que verifica se inseminação está deleteada')
 })
 
 list_inseminacaoes_response = namespace.model('Resposta da lista de inseminacaoes', {
