@@ -26,7 +26,8 @@ list_confinamento = namespace.model('Lista de confinamentos', {
     'id': fields.Integer(required=True, description='ID da inseminação'),
     'dataConfinamento': fields.String(required=True, description='Data de /entrada no confinamento'),
     'matriz': fields.Nested({'description': fields.String, 'value': fields.String}, required=True, description='FK da matriz'),
-    'plano': fields.Nested({'description': fields.String, 'value': fields.String}, required=True, description='FK do plano de alimentação')
+    'plano': fields.Nested({'description': fields.String, 'value': fields.String}, required=True, description='FK do plano de alimentação'),
+    'active': fields.Boolean(required=True, description='Verifica se o confinamento está ativo ou não'),
 })
 
 list_confinamento_response = namespace.model('Resposta para lista de confinamentos', {
