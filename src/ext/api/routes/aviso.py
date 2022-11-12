@@ -95,7 +95,7 @@ class UpdateRegistro(Resource):
 
 @namespace.route('/')
 @namespace.expect(headers)
-class ListaRegistros(Resource):
+class ListRegistros(Resource):
     @namespace.marshal_with(list_avisos_response)
     def get(self):
         """Lista todos os avisos pendentes"""

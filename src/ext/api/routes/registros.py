@@ -109,7 +109,7 @@ class GetRegistro(Resource):
 
 @namespace.route('/', doc={"description": 'Lista todos os matrizes'})
 @namespace.expect(headers)
-class ListaRegistros(Resource):
+class ListRegistros(Resource):
     @namespace.marshal_with(list_registros_response)
     def get(self):
         """Lista todos os registros"""

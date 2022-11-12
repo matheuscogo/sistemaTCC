@@ -116,7 +116,7 @@ class GetMatriz(Resource):
 
 @namespace.route('/', doc={"description": 'Lista todos os matrizes'})
 @namespace.expect(headers)
-class ListaMatrizes(Resource):
+class ListMatrizes(Resource):
     @namespace.marshal_with(list_matrizes_response)
     def get(self):
         """Lista todos os matrizess"""

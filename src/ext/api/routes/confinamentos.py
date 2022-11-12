@@ -25,8 +25,8 @@ update_confinamento = namespace.model('Dados para atualizar o confinamento', {
 list_confinamento = namespace.model('Lista de confinamentos', {
     'id': fields.Integer(required=True, description='ID da inseminação'),
     'dataConfinamento': fields.String(required=True, description='Data de /entrada no confinamento'),
-    'matriz': fields.Nested({'description': fields.String, 'value': fields.String}, required=True, description='FK da matriz'),
-    'plano': fields.Nested({'description': fields.String, 'value': fields.String}, required=True, description='FK do plano de alimentação'),
+    'matriz': fields.Nested(namespace.model('', {'description': fields.String, 'value': fields.String}), required=True, description='FK da matriz'),
+    'plano': fields.Nested(namespace.model('', {'description': fields.String, 'value': fields.String}), required=True, description='FK do plano de alimentação'),
     'active': fields.Boolean(required=True, description='Verifica se o confinamento está ativo ou não'),
 })
 
@@ -69,7 +69,7 @@ class CreateConfinamento(Resource):
 
 @namespace.route('/update/')
 @namespace.expect(headers)
-class UpdateRegistro(Resource):
+class UpdateConfinamento(Resource):
     @namespace.expect(update_confinamento, validate=True)
     def put(self):
         """Atualiza um confinamento"""
@@ -90,9 +90,9 @@ class UpdateRegistro(Resource):
 @namespace.route('/<int:id>')
 @namespace.param('id')
 @namespace.expect(headers)
-class GetRegistro(Resource):
+class GetConfinamento(Resource):
     def get(self, id):
-        """Consulta um registro por id"""
+        """Consulta um confinamento por id"""
         try:
             confinamento = confinamentoCRUD.consultarConfinamento(id)
             return confinamento
@@ -102,7 +102,7 @@ class GetRegistro(Resource):
 
 @namespace.route('/')
 @namespace.expect(headers)
-class ListaRegistros(Resource):
+class ListConfinamento(Resource):
     @namespace.marshal_with(list_confinamento_response)
     def get(self):
         """Lista todos os confinamentos"""
@@ -116,9 +116,9 @@ class ListaRegistros(Resource):
 @namespace.route('/delete/<int:id>')
 @namespace.param('id', 'ID do confinamento')
 @namespace.expect(headers)
-class DeleteRegistro(Resource):
+class DeleteConfinamento(Resource):
     def delete(self, id):
-        """Remove um registro"""
+        """Remove um confinamento"""
         try:
             confinamento = confinamentoCRUD.excluirConfinamento(id)
             return confinamento
