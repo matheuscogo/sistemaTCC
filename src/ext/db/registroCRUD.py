@@ -1,4 +1,4 @@
-from ..site.model import Registro
+from ..site.model import Registro, Matriz
 from ..site.model import RegistroSchema
 from ..db import db
 from werkzeug.wrappers import Response, Request
@@ -39,8 +39,36 @@ def cadastrarRegistro(args):  # Create
 
 
 def consultarRegistros():  # Read
-    try:
-        registros = db.session.query(Registro).all()
+    try:        
+        result = db.session.query(
+            Registro.id,
+            Registro.dataEntrada,
+            Registro.dataSaida,
+            Registro.quantidade,
+            Registro.matrizId,
+            Matriz.numero.label('numeroMatriz'),
+        ).join(Matriz).filter(
+            Matriz.deleted==False,
+        ).all()
+        
+        registros = []
+
+        for registro in result:
+            obj = {
+                "id": registro.id, 
+                "matriz": {
+                    'description': registro.numeroMatriz,
+                    'value': registro.matrizId
+                }, 
+                "dataEntrada": registro.dataEntrada,
+                "dataSaida": registro.dataSaida,
+                "quantidade": registro.quantidade,
+                "tempo": ((registro.dataSaida - registro.dataEntrada).seconds) * 1000,
+            }
+            
+            registros.append(obj)
+            
+        return registros
         # if not registros:
         #     raise BaseException("Erro ao consultar no banco de dados")
         return registros

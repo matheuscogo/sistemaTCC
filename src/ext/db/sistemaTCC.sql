@@ -44,7 +44,6 @@ CREATE TABLE IF NOT EXISTS  registros  (
   matriz_id BIGINT,
   data_entrada timestamp,
   data_saida timestamp,
-  tempo INTEGER,
   quantidade INTEGER,
   PRIMARY KEY (id),
   CONSTRAINT fk_matriz_id FOREIGN KEY("matriz_id") REFERENCES matrizes (id)
@@ -63,13 +62,15 @@ CREATE TABLE IF NOT EXISTS  inseminacoes  (
   CONSTRAINT fk_matriz_id FOREIGN KEY("matriz_id") REFERENCES matrizes (id),
   CONSTRAINT fk_confinamento_id FOREIGN KEY("confinamento_id") REFERENCES confinamentos (id)
 );
+
 CREATE TABLE IF NOT EXISTS avisos (
   id SERIAL NOT NULL,
   confinamento_id BIGINT,
-  dataAviso timestamp,
-  separar BOOLEAN,
-  status BOOLEAN,
+  data_aviso timestamp,
+  separate BOOLEAN,
+  type INTEGER,
   active BOOLEAN,
+  deleted BOOLEAN,
   PRIMARY KEY (id),
   CONSTRAINT fk_confinamento_id FOREIGN KEY("confinamento_id") REFERENCES confinamentos (id)
 );

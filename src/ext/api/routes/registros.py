@@ -31,17 +31,15 @@ update_registro = namespace.model('Dados para atualização de um registro', {
 
 list_registros = namespace.model('Lista de registros', {
     'id': fields.Integer(required=True, description='ID do registro'),
-    'matrizId': fields.Integer(required=True, description='FK da matriz'),
-    'dataEntrada': fields.String(required=True, description='Dia da entrada da matriz no alimentador'),
-    'dataSaida': fields.String(required=True, description='Dia da saida da matriz no alimentador'),
-    'horaEntrada': fields.String(required=True, description='Hora de entrada da matriz no alimentador'),
-    'horaSaida': fields.String(required=True, description='Hora de saida da matriz no alimentador'),
-    'tempo': fields.String(required=True, description='Tempo que a matriz permaneceu no confinamento'),
+    'matriz': fields.Nested(namespace.model('', {'description': fields.String, 'value': fields.String}), required=True, description='FK da matriz'),
+    'dataEntrada': fields.DateTime(required=True, description='Dia da entrada da matriz no alimentador'),
+    'dataSaida': fields.DateTime(required=True, description='Dia da saida da matriz no alimentador'),
+    'tempo': fields.Integer(required=True, description='Tempo que a matriz permaneceu no confinamento'),
     'quantidade': fields.Integer(required=True, description='Quantidade de ração consumida pela matriz')
 })
 
 list_registros_response = namespace.model('Resposta da lista de registros', {
-    'response': fields.Nested(list_registros, required=True, description='Lista de registros')
+    'data': fields.Nested(list_registros, required=True, description='Lista de registros')
 })
 
 headers = namespace.parser()
@@ -115,7 +113,7 @@ class ListRegistros(Resource):
         """Lista todos os registros"""
         try:
             registros = registroCRUD.consultarRegistros()
-            return { "response": registros }
+            return { "data": registros }
         except HTTPException as e:
             raise InternalServerError(e.args[0])
 
