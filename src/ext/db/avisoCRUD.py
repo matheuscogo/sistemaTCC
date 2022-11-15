@@ -46,31 +46,51 @@ def consultarConfinamento(id):  # Read
 
 def consultarAvisos():  # Read
     try:
-        response = db.session.query(Aviso.Aviso).filter_by(active=True).all()
+        responses = db.session.query(
+            Aviso.id, 
+            Aviso.type, 
+            Aviso.dataAviso, 
+            Aviso.separate, 
+            Aviso.active, 
+            Matriz.numero.label('matrizNumero')
+        ).join(
+            Confinamento, Confinamento.id == Aviso.confinamentoId
+        ).join(
+            Matriz, Matriz.id == Confinamento.matrizId
+        ).filter(
+            Aviso.active==True,
+            Aviso.deleted==False
+        ).all()
         
         avisos = []
         
-        if response != None:
-            for aviso in response:
-                separarDescription = "Pendente"
+        for aviso in responses:
+            msg = ''
             
-                confinamento = db.session.query(Confinamento).filter_by(id=int(aviso.confinamentoId), active=True).first()
-                matrizDescription = db.session.query(Matriz.rfid).filter_by(id=int(confinamento.matrizId), deleted=False).first()[0]
+            # Matriz sem brinco
+            if aviso.type is 1:
+                msg = "Matriz sem brinco"
             
-                if aviso.separar:
-                    separarDescription = "Em processo"
-                
-                obj = {
-                    'id': aviso.id,
-                    'confinamentoId': aviso.confinamentoId,
-                    'dataAviso': aviso.dataAviso,
-                    'separar': aviso.separar,
-                    'matrizDescription': matrizDescription,
-                    'separarDescription': separarDescription,
-                    'active ': aviso.active
-                }
+            # Matriz prestes a parir
+            if aviso.type is 2:
+                msg = "Matriz nº " + str(aviso.matrizNumero) + " está prestes a parir"
             
-                avisos.append(obj)
+            # Reservatório de comida quase vazio
+            if aviso.type is 3:
+                msg = "Há pouca ração no reservatório"
+        
+            obj = {
+                'id': aviso.id,
+                'aviso': {
+                    'label': msg,
+                    'value': aviso.type
+                },
+                'dataAviso': aviso.dataAviso,
+                'separate': aviso.separate,
+                'active': aviso.active
+            }
+        
+            avisos.append(obj)
 
         return avisos
     except BaseException as e:

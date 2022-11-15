@@ -17,16 +17,15 @@ insert_aviso = namespace.model('Dados para criação de um aviso', {
 
 update_aviso = namespace.model('Dados para atualizar o aviso', {
     'id': fields.Integer(required=True, description='ID do aviso'),
-    'separar': fields.Boolean(required=True, description='Valor da flag')
+    'separate': fields.Boolean(required=True, description='Valor da flag')
 })
 
 list_avisos = namespace.model('Lista de avisos', {
     'id': fields.Integer(required=True, description='ID do aviso'),
+    'aviso': fields.Nested(namespace.model('', {'label': fields.String, 'value': fields.Integer}), required=True, description='Descrição da flag separar'),
     'dataAviso': fields.DateTime(required=True, description='Data da criação do registro do aviso'),
-    'separar': fields.String(required=True, description='Flag para separação'),
-    'matrizDescription': fields.String(required=True, description='Descrição da matriz confinada'),
-    'separarDescription': fields.String(required=True, description='Descrição da flag separar'),
-    'active ': fields.Boolean(required=True, description='FK do plano de alimentação')
+    'separate': fields.Boolean(required=True, description='Flag para separação'),
+    'active': fields.Boolean(required=True, description='FK do plano de alimentação')
 })
 
 list_avisos_response = namespace.model('Resposta para lista de avisos', {
@@ -68,7 +67,7 @@ class UpdateRegistro(Resource):
             parser = reqparse.RequestParser()
             
             parser.add_argument('id', type=int)
-            parser.add_argument('separar', type=bool)
+            parser.add_argument('separate', type=bool)
 
             args = parser.parse_args()
             aviso = avisoCRUD.separarMatriz(args)

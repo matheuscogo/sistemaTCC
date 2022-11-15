@@ -25,8 +25,9 @@ update_confinamento = namespace.model('Dados para atualizar o confinamento', {
 list_confinamento = namespace.model('Lista de confinamentos', {
     'id': fields.Integer(required=True, description='ID da inseminação'),
     'dataConfinamento': fields.String(required=True, description='Data de /entrada no confinamento'),
-    'matriz': fields.Nested({'description': fields.String, 'value': fields.String}, required=True, description='FK da matriz'),
-    'plano': fields.Nested({'description': fields.String, 'value': fields.String}, required=True, description='FK do plano de alimentação')
+    'matriz': fields.Nested(namespace.model('', {'description': fields.String, 'value': fields.String}), required=True, description='FK da matriz'),
+    'plano': fields.Nested(namespace.model('', {'description': fields.String, 'value': fields.String}), required=True, description='FK do plano de alimentação'),
+    'active': fields.Boolean(required=True, description='FK do plano de alimentação')
 })
 
 list_confinamento_response = namespace.model('Resposta para lista de confinamentos', {
