@@ -33,9 +33,12 @@ list_inseminacoes = namespace.model('Lista de inseminacaoes', {
     'deleted': fields.Boolean(required=True, description='Flag que verifica se inseminação está deleteada')
 })
 
-list_inseminacaoes_response = namespace.model('Resposta da lista de inseminacaoes', {
-    'data': fields.Nested(list_inseminacoes, required=True, description='Lista de inseminações')
+list_inseminacoes_response = namespace.model('Resposta da lista de matrizes', {
+    'success': fields.Boolean(required=True, description='Condição da requisição'),
+    'message': fields.String(required=True, description='Mensagem da requisição'),
+    'response': fields.Nested(list_inseminacoes, required=True, description='Mensagem da requisição')
 })
+
 
 delete_episode_response = namespace.model('Resposta da remocao de inseminacaoes', {
     'removed': fields.Boolean(required=True, description='Indicador de remocao com sucesso')
@@ -63,16 +66,24 @@ class CreateInseminacao(Resource):
                 planoId = args['planoId'],
                 matrizId = args['matrizId'],
                 dataInseminacao = args['dataInseminacao'],
+                active=True,
+                deleted=False,
             )
             
             inseminacao = inseminacaoCRUD.cadastrarInseminacao(inseminacao, args['isNewCiclo'])
             
-            if not inseminacao:
-                raise Exception("Error")
-            
+            if not inseminacao['success']:
+                raise BaseException(inseminacao['message'])
+
             return inseminacao
-        except Exception as e:
-            raise InternalServerError(e.args[0])
+        except BaseException as e:
+            response = {
+                'success': False,
+                'response': {},
+                'message': e.args[0]
+            }
+            
+            return response
 
 @namespace.route('/update/', methods=["PUT"])
 @namespace.expect(headers)
@@ -86,12 +97,21 @@ class UpdateInseminacao(Resource):
             parser.add_argument('matrizId', type=int)
             parser.add_argument('dataInseminacao', type=str)
             args = parser.parse_args()
+            
             inseminacao = inseminacaoCRUD.atualizarInseminacao(args)
-            if not inseminacao:
-                raise Exception("Error")
+            
+            if not inseminacao['success']:
+                raise BaseException(inseminacao['message'])
+
             return inseminacao
-        except Exception as e:
-            raise InternalServerError(e.args[0])
+        except BaseException as e:
+            response = {
+                'success': False,
+                'response': {},
+                'message': e.args[0]
+            }
+            
+            return response
 
 @namespace.route('/<int:id>', methods=["GET"])
 @namespace.param('id')
@@ -101,22 +121,42 @@ class GetInseminacao(Resource):
         """Consulta uma inseminação por id"""
         try:
             inseminacao = inseminacaoCRUD.consultarInseminacao(id)
+            
+            if not inseminacao['success']:
+                raise BaseException(inseminacao['message'])
+
             return inseminacao
-        except HTTPException as e:
-            raise InternalServerError(e.args[0])
+        except BaseException as e:
+            response = {
+                'success': False,
+                'response': {},
+                'message': e.args[0]
+            }
+            
+            return response
 
 
 @namespace.route('/', doc={"description": 'Lista todos os inseminações'}, methods=["GET"])
 @namespace.expect(headers)
 class ListInseminacoes(Resource):
-    @namespace.marshal_with(list_inseminacaoes_response)
+    @namespace.marshal_with(list_inseminacoes_response)
     def get(self):
         """Lista todos os inseminações"""
         try:
             inseminacaoes = inseminacaoCRUD.consultarInseminacoes()
-            return {"data": inseminacaoes}
-        except HTTPException as e:
-            raise InternalServerError(e.args[0])
+            
+            if not inseminacaoes['success']:
+                raise BaseException(inseminacaoes['message'])
+
+            return inseminacaoes
+        except BaseException as e:
+            response = {
+                'success': False,
+                'response': {},
+                'message': e.args[0]
+            }
+            
+            return response
 
 
 @namespace.route('/delete/<int:id>',
@@ -129,9 +169,19 @@ class DeleteInseminacao(Resource):
         """Remove inseminação"""
         try:
             inseminacao = inseminacaoCRUD.excluirInseminacao(id)
+            
+            if not inseminacao['success']:
+                raise BaseException(inseminacao['message'])
+
             return inseminacao
-        except Exception as e:
-            raise InternalServerError(e.args[0])
+        except BaseException as e:
+            response = {
+                'success': False,
+                'response': {},
+                'message': e.args[0]
+            }
+            
+            return response
 
 def bind_with_api(api: Api):
     """

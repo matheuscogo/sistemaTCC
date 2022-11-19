@@ -16,8 +16,7 @@ insert_matriz = namespace.model('Dados para criação de uma matriz', {
 update_matriz = namespace.model('Dados para atualização de matrizes', {
     'rfid': fields.String(description='RFID das matrizes'),
     'numero': fields.String(required=True, description='RFID'),
-    'ciclos': fields.Integer(required=True, description='Ciclos da matriz'),
-    'deleted': fields.Boolean(required=True, description='Flag que verifica se matriz está deleteada')
+    'ciclos': fields.Integer(required=True, description='Ciclos da matriz')
 })
 
 list_matrizes = namespace.model('Lista de matrizes', {
@@ -29,11 +28,15 @@ list_matrizes = namespace.model('Lista de matrizes', {
 })
 
 list_matrizes_response = namespace.model('Resposta da lista de matrizes', {
-    'data': fields.Nested(list_matrizes, required=True, description='Lista de matrizes')
+    'success': fields.Boolean(required=True, description='Condição da requisição'),
+    'message': fields.String(required=True, description='Mensagem da requisição'),
+    'response': fields.Nested(list_matrizes, required=True, description='Mensagem da requisição')
 })
 
-delete_episode_response = namespace.model('Resposta da remocao de matrizes', {
-    'removed': fields.Boolean(required=True, description='Indicador de remocao com sucesso')
+delete_response = namespace.model('Resposta da remocao de matrizes', {
+    'success': fields.Boolean(required=True, description='Condição da requisição'),
+    'message': fields.String(required=True, description='Mensagem da requisição'),
+    'response': fields.Nested(namespace.model('', {}), required=True, description='Mensagem da requisição')
 })
 
 headers = namespace.parser()
@@ -54,19 +57,25 @@ class CreateMatriz(Resource):
             args = parser.parse_args()
             
             matriz = Matriz(
-                rfid = args['numero'],
-                numero = args['rfid'],
+                rfid = args['rfid'],
+                numero = args['numero'],
                 ciclos = args['ciclos'],
             )
             
             matriz = matrizCRUD.cadastrarMatriz(matriz)
             
-            if not matriz:
-                raise Exception("Não foi possivel cadastrar matriz")
+            if not matriz['success']:
+                raise Exception(matriz['message'])
             
             return matriz
         except Exception as e:
-            raise InternalServerError(e.args[0])
+            response = {
+                'success': False,
+                'response': {},
+                'message': e.args[0]
+            }
+            
+            return response
 
 @namespace.route('/update/<int:id>')
 @namespace.param('id')
@@ -77,17 +86,35 @@ class UpdateMatriz(Resource):
         """Atualiza uma matriz pelo id"""
         try:
             parser = reqparse.RequestParser()
+            
             parser.add_argument('numero', type=str)
             parser.add_argument('rfid', type=str)
             parser.add_argument('ciclos', type=int)
-            parser.add_argument('deleted', type=bool)
+            
             args = parser.parse_args()
-            matriz = matrizCRUD.atualizarMatriz(id, args)
-            if not matriz:
-                raise Exception("Error")
+            
+            matriz = Matriz(
+                rfid=args['rfid'],
+                numero=args['numero'],
+                ciclos=args['ciclos'],
+                active=True,
+                deleted=False,
+            )
+            
+            matriz = matrizCRUD.atualizarMatriz(id, matriz)
+            
+            if not matriz['success']:
+                raise BaseException(matriz['message'])
+
             return matriz
-        except Exception as e:
-            raise InternalServerError(e.args[0])
+        except BaseException as e:
+            response = {
+                'success': False,
+                'response': {},
+                'message': e.args[0]
+            }
+        
+            return response
 
 @namespace.route('/<int:id>')
 @namespace.param('id')
@@ -97,9 +124,19 @@ class GetMatriz(Resource):
         """Consulta uma matriz por id"""
         try:
             matriz = matrizCRUD.consultarMatriz(id)
+            
+            if not matriz['success']:
+                raise BaseException(matriz['message'])
+
             return matriz
-        except HTTPException as e:
-            raise InternalServerError(e.args[0])
+        except BaseException as e:
+            response = {
+                'success': False,
+                'response': {},
+                'message': e.args[0]
+            }
+        
+            return response
         
 @namespace.route('/getMatrizByRfid/<rfid>')
 @namespace.param('rfid')
@@ -109,10 +146,20 @@ class GetMatriz(Resource):
         """Consulta uma matriz por rfid"""
         try:
             matriz = matrizCRUD.getMatrizByRfid(rfid=rfid)
+            
+            if not matriz['success']:
+                raise BaseException(matriz['message'])
+            
             return matriz
-        except HTTPException as e:
-            raise InternalServerError(e.args[0])
-
+        except BaseException as e:
+            response = {
+                'success': False,
+                'response': {},
+                'message': e.args[0]
+            }
+        
+            return response
+            
 
 @namespace.route('/', doc={"description": 'Lista todos os matrizes'})
 @namespace.expect(headers)
@@ -122,9 +169,19 @@ class ListMatrizes(Resource):
         """Lista todos os matrizess"""
         try:
             matrizes = matrizCRUD.consultarMatrizes()
-            return {"data": matrizes}
-        except HTTPException as e:
-            raise InternalServerError(e.args[0])
+            
+            if not matrizes['success']:
+                raise BaseException(matrizes['message'])
+
+            return matrizes
+        except BaseException as e:
+            response = {
+                'success': False,
+                'response': {},
+                'message': e.args[0]
+            }
+            
+            return response
 
 
 @namespace.route('/delete/<int:id>',
@@ -133,13 +190,25 @@ class ListMatrizes(Resource):
 @namespace.param('id', 'ID da matriz')
 @namespace.expect(headers)
 class DeleteMatriz(Resource):
+    @namespace.marshal_with(delete_response)
     def delete(self, id):
         """Remove matrizes"""
         try:
             matriz = matrizCRUD.excluirMatriz(id)
+            
+            if not matriz['success']:
+                raise BaseException(matriz['message'])
+
             return matriz
-        except Exception as e:
-            raise InternalServerError(e.args[0])
+        except BaseException as e:
+            response = {
+                'success': False,
+                'response': {},
+                'message': e.args[0]
+            }
+            
+            return response
+        
 
 def bind_with_api(api: Api):
     """

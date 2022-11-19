@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS matrizes  (
-  id SERIAL NOT NULL,
+  id INTEGER,
   rfid VARCHAR,
   numero VARCHAR,
   ciclos INTEGER,
@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS matrizes  (
 );
 
 CREATE TABLE IF NOT EXISTS planos  (
-  id SERIAL NOT NULL,
+  id INTEGER,
   nome VARCHAR,
   descricao VARCHAR,
   tipo VARCHAR,
@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS planos  (
 );
 
 CREATE TABLE IF NOT EXISTS dias  (
-  id SERIAL NOT NULL,
+  id INTEGER,
   plano_id BIGINT,
   dia INTEGER,
   quantidade INTEGER,
@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS dias  (
 );
 
 CREATE TABLE IF NOT EXISTS confinamentos  (
-  id SERIAL NOT NULL,
+  id INTEGER,
   plano_id BIGINT,
   matriz_id BIGINT,
   data_confinamento timestamp,
@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS confinamentos  (
 );
 
 CREATE TABLE IF NOT EXISTS  registros  (
-  id SERIAL NOT NULL,
+  id INTEGER,
   matriz_id BIGINT,
   data_entrada timestamp,
   data_saida timestamp,
@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS  registros  (
 );
 
 CREATE TABLE IF NOT EXISTS  inseminacoes  (
-  id SERIAL NOT NULL,
+  id INTEGER,
   plano_id BIGINT,
   matriz_id BIGINT,
   confinamento_id BIGINT,
@@ -64,8 +64,8 @@ CREATE TABLE IF NOT EXISTS  inseminacoes  (
 );
 
 CREATE TABLE IF NOT EXISTS avisos (
-  id SERIAL NOT NULL,
-  confinamento_id BIGINT,
+  id INTEGER,
+  confinamento_id BIGINT NULL,
   data_aviso timestamp,
   separate BOOLEAN,
   type INTEGER,

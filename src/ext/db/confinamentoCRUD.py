@@ -1,8 +1,3 @@
-from genericpath import exists
-from queue import Empty
-
-from responses import activate, delete
-
 from ext.site.model import Inseminacao
 from ..site.model import Confinamento
 from ..site.model import Registro
@@ -19,40 +14,85 @@ from ..site.model import Matriz
 from ..site.model import Registro
 from ..db import db
 from sqlalchemy.sql import func
-from datetime import datetime, timedelta
+from datetime import datetime
 
-def cadastrarConfinamento(confinamento):  # Create
+def cadastrarConfinamento(newConfinamento):  # Create
     try:
-        if not confinamento.matrizId:
+        if not newConfinamento.matrizId:
             raise Exception(ResponseError)
 
-        if not confinamento.planoId:
+        if not newConfinamento.planoId:
             raise Exception(ResponseError)
             
-        if not confinamento.dataConfinamento:
+        if not newConfinamento.dataConfinamento:
             raise Exception(ResponseError)
-
-        oldConfinamento = db.session.query(Confinamento).filter_by(matrizId=confinamento.matrizId, active=True, deleted=False).first()
-
-        if oldConfinamento != None:
-            oldConfinamento.active = False
-            oldConfinamento.deleted = True
-            db.session.add(oldConfinamento)
-
-        db.session.add(confinamento)
+        
+        hasInseminacao = db.session.query(Inseminacao.query.filter_by(matrizId=newConfinamento.matrizId, active=True, deleted=False).exists()).scalar()
+        if hasInseminacao:
+            raise Exception("Existe uma inseminação ativa para essa matriz.")
+        
+        hasConfinamento = db.session.query(Confinamento.query.filter_by(matrizId=newConfinamento.matrizId, active=True, deleted=False).exists()).scalar()
+        if hasConfinamento:
+            confinamento = db.session.query(Confinamento).filter_by(matrizId=newConfinamento.matrizId, active=True, deleted=False).first()
+            confinamento.active = False
+            confinamento.deleted = True
+            db.session.flush()
+            
+        db.session.add(newConfinamento)
         db.session.commit()
         
-        return Response(response=json.dumps("{success: true, message: Confinamento cadastrado com sucesso!, response: null}"), status=200)
+        response = {
+            'success': True,
+            'response': {},
+            'message': "Confinamento cadastrado com sucesso!"
+        }
+            
+        return response
     except BaseException as e:
-        return Response(response=json.dumps("{success: false, message: " + e.args[0] + ", response: null}"), status=501)
-
-
+        response = {
+            'success': False,
+            'response': {},
+            'message': e.args[0]
+        }
+        
+        return  response
+    except BaseException as e:
+        response = {
+            'success': False,
+            'response': {},
+            'message': e.args[0]
+        }
+        
+        return  response
+    except Exception as e:
+        response = {
+            'success': False,
+            'response': {},
+            'message': e.args[0]
+        }
+        
+        return  response
+    
+    
 def consultarConfinamento(id):  # Read
     try:
         confinamento = db.session.query(Confinamento).filter_by(id=id, deleted=False).first()
-        return ConfinamentoSchema().dump(confinamento)
+        
+        response = {
+            'success': True,
+            'response': confinamento,
+            'message': ""
+        }
+            
+        return response
     except BaseException as e:
-        return str(e)
+        response = {
+            'success': False,
+            'response': {},
+            'message': e.args[0]
+        }
+        
+        return  response
 
 def consultarConfinamentos():  # Read
     try:
@@ -90,42 +130,92 @@ def consultarConfinamentos():  # Read
             
             confinamentos.append(obj)
             
-        return confinamentos
+        response = {
+            'success': True,
+            'response': confinamentos,
+            'message': ""
+        }
+            
+        return response
     except BaseException as e:
-        return str(e)
+        response = {
+            'success': False,
+            'response': {},
+            'message': e.args[0]
+        }
+        
+        return  response
 
-def atualizarConfinamento(args):
+def atualizarConfinamento(id, newConfinamento):
     try:
-        id = args['id']
-        dataConfinamento = args['dataConfinamento']
-        plano = args['plano']
-        matriz = args['matriz']
+        if id is None:
+            raise Exception("Confinamento não repassada para o controlador.")
         
-        confinamento = db.session.query(Confinamento).filter_by(id=id).first()
+        if not newConfinamento.planoId:
+            raise Exception("Plano não repasado para o controlador.")
+            
+        if not newConfinamento.dataConfinamento:
+            raise Exception("Data do confinamento não repasado para o controlador.")
         
-        confinamento.dataConfinamento = dataConfinamento
-        confinamento.matriz = matriz
-        confinamento.plano = plano
+        confinamento = db.session.query(Confinamento).filter_by(id=id, deleted=False).first()
+        
+        hasInseminacao = db.session.query(Inseminacao.query.filter_by(matrizId=confinamento.matrizId, active=True, deleted=False).exists()).scalar()
+        if hasInseminacao:
+            raise Exception("Existe uma inseminação ativa para essa matriz.")
+
+        confinamento.dataConfinamento = newConfinamento.dataConfinamento
+        confinamento.planoId = newConfinamento.planoId
+        confinamento.active = newConfinamento.active
         
         db.session.add(confinamento)
         db.session.commit()
         
-        return Response(response=json.dumps("{success: true, message: Confinamento atualizado com sucesso!, response: null}"), status=200)
+        response = {
+            'success': True,
+            'response': {},
+            'message': "Confinamento atualizado com sucesso!"
+        }
+            
+        return response
     except BaseException as e:
-        return Response(response=json.dumps("{success: false, message: " + e.args[0] + ", response: null}"), status=501)
+        response = {
+            'success': False,
+            'response': {},
+            'message': e.args[0]
+        }
+        
+        return  response
 
 def excluirConfinamento(id):  # Delete
     try:
-        confinameto = db.session.query(Confinamento).filter_by(id=id, deleted=False).first()
+        if id is None:
+            raise Exception("Confinamento não repassada para o controlador.")
         
-        confinameto.deleted = True
+        confinamento = db.session.query(Confinamento).filter_by(id=id, deleted=False).first()
         
-        db.session.add(confinameto)
+        hasInseminacao = db.session.query(Inseminacao.query.filter_by(matrizId=confinamento.matrizId, active=True, deleted=False).exists()).scalar()
+        if hasInseminacao:
+            raise Exception("Existe uma inseminação ativa para essa matriz.")
+
+        confinamento.deleted = True
+        
         db.session.commit()
         
-        return Response(response=json.dumps("{success: true, message: Confinameto excluido com sucesso!, response: null}"), status=200)
+        response = {
+            'success': True,
+            'response': {},
+            'message': "Confinamento excluida com sucesso!"
+        }
+            
+        return response
     except BaseException as e:
-        return Response(response=json.dumps("{success: false, message: "+ e.args[0] +", response: null}"), status=501)
+        response = {
+            'success': False,
+            'response': {},
+            'message': e.args[0]
+        }
+        
+        return  response
 
 
 def getConfinamentoByMatriz(matrizId):
@@ -166,25 +256,30 @@ def getQuantityForMatriz(matrizId):
 
 def canOpenDoor(matrizId):
     try:
-        hasInseminacao = db.session.query(Inseminacao.Inseminacao.query.filter_by(confinamentoId=matrizId, active=True).exists()).scalar()
+        hasConfinamento = db.session.query(Confinamento.query.filter_by(matrizId=matrizId, active=True, deleted=False).exists()).scalar()
+        if not hasConfinamento:
+            return "Matriz não possui confinameto"
         
+        hasInseminacao = db.session.query(Inseminacao.query.filter_by(matrizId=matrizId, active=True, deleted=False).exists()).scalar()
         if not hasInseminacao:
-            return "Matriz não possui inseminação valida"
+            return "Matriz não possui inseminação"
 
-        confinamento = db.session.query(Confinamento.Confinamento).filter_by(matrizId=matrizId, active=True).first()
-        canOpen = db.session.query(Aviso.Aviso).filter_by(confinamentoId=confinamento.id, active=True).first()
+        confinamento = db.session.query(Confinamento).filter_by(matrizId=matrizId, active=True, deleted=False).first()
+        
+        hasWarning = db.session.query(Aviso.query.filter_by(confinamentoId=confinamento.id, active=True, deleted=False, type=2).exists()).scalar()
+        if not hasWarning:
+            return "Matriz não possui aviso de separação"
+        
+        canOpen = db.session.query(Aviso).filter_by(confinamentoId=confinamento.id, active=True, deleted=False).first()
 
-        if canOpen.separar:
-            return True
-        else:
-            return False
+        return canOpen.separate
     except BaseException as e:
         return e.args[0]
 
 
 def verifyDaysToOpen():
     try:
-        inseminacao = db.session.query(Inseminacao.Inseminacao).filter_by(active=True).all()
+        inseminacao = db.session.query(Inseminacao).filter_by(active=True).all()
         
         for item in inseminacao:
             day = getDaysInConfinament(matrizId=item.matrizId)
@@ -201,14 +296,11 @@ def verifyDaysToOpen():
 
 
 def getDaysInConfinament(matrizId):
-    confinamento = db.session.query(Confinamento.Confinamento).filter_by(matrizId=matrizId, active=True).first()
-    dataEntrada = datetime.strptime(confinamento.dataConfinamento, '%d/%m/%y')
+    confinamento = db.session.query(Confinamento).filter_by(matrizId=matrizId, active=True, deleted=False).first()
     dataAtual = datetime.today()
-    days = dataAtual - dataEntrada
+    days = dataAtual - Confinamento.dataConfinamento
     
     if days == 0:
         days = 1
         
-    print("DIA ENTRADA = " + str(dataEntrada))
-    print("DIA ATUAL = " + str(dataAtual))
     return days.days

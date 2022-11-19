@@ -1,91 +1,140 @@
 from ..site.model import Plano
-from ..site.model import Dia
 from ..site.model import PlanoSchema
 from ..db import db
-from werkzeug.wrappers import Response, Request
-import json
 
-# def cadastrarPlano(args):  # Create
-#     try:
-#         nome = args['nome']
-#         descricao = args['descricao']
-#         tipo = args['tipo']
-#         quantidadeDias = args['quantidadeDias']
-#         db.session.add(Plano.Plano(
-#             nome=nome,
-#             descricao=descricao,
-#             tipo=tipo,
-#             quantidadeDias=quantidadeDias
-#             )
-#         )
-#         db.session.commit()
-#         return Response(response=json.dumps("{success: true, message: Plano cadastrado com sucesso!, response: null}"), status=200)
-#     except BaseException as e:
-#         return Response(response=json.dumps("{success: false, message: " + e.args[0] + ", response: null}"), status=501)
 
-def cadastrarPlano(plano, dias):  # Create
+def cadastrarPlano(plano):  # Create
     try:
-        if plano.nome != None:
-            planoObj = json.loads(str(dias))
-            days = planoObj["plano"]
-            db.session.add(plano)
-            db.session.commit()
-            for i in days:
-                quantidade = i["quantidade"]
-                dia1 = i["dias"][0]
-                dia2 = i["dias"][1]
-                for y in range(dia1, (dia2+1)):
-                    print("DIAS -> " + str(y) + " quantidade: " + str(quantidade))
-                    db.session.add(Dia(planoId=int(plano.id), dia = y, quantidade=quantidade))
-                    db.session.commit()
-            return ""
-        else:
-            return ""
+        if plano.nome == None or plano.nome == "":
+            raise Exception("Nome do plano não repasado para o controlador")
+            
+        if plano.tipo == None or plano.tipo == "":
+            raise Exception("Tipo do plano de alimentação não repasado para o controlador")
+        
+        db.session.add(plano)
+        db.session.commit()
+        
+        response = {
+            'success': True,
+            'response': {},
+            'message': "Plano cadastrado com sucesso!"
+        }
+            
+        return response
     except BaseException as e:
-        return False
+        response = {
+            'success': False,
+            'response': {},
+            'message': e.args[0]
+        }
+        
+        return  response
+
+
+# def cadastrarPlano(plano, dias):  # Create
+#     try:
+#         if plano.nome != None:
+#             planoObj = json.loads(str(dias))
+#             days = planoObj["plano"]
+#             db.session.add(plano)
+#             db.session.commit()
+#             for i in days:
+#                 quantidade = i["quantidade"]
+#                 dia1 = i["dias"][0]
+#                 dia2 = i["dias"][1]
+#                 for y in range(dia1, (dia2+1)):
+#                     print("DIAS -> " + str(y) + " quantidade: " + str(quantidade))
+#                     db.session.add(Dia(planoId=int(plano.id), dia = y, quantidade=quantidade))
+#                     db.session.commit()
+#             return ""
+#         else:
+#             return ""
+#     except BaseException as e:
+#         return False
 
 
 def consultarPlanos():  # Read
     try:
         planos = db.session.query(Plano).filter_by(deleted=False).all()
-        return planos
+        
+        response = {
+            'success': True,
+            'response': planos,
+            'message': ""
+        }
+            
+        return response
     except BaseException as e:
-        return Response(response=json.dumps("{success: false, message: " + e.args[0] + ", response: null}"), status=501)
-    
+        response = {
+            'success': False,
+            'response': {},
+            'message': e.args[0]
+        }
+        
+        return  response
+
+
 def consultarPlano(id): # Read
     try:
         plano = db.session.query(Plano).filter_by(id=id, deleted=False).first()
-        return PlanoSchema().dump(plano)
-    except Exception as e:
-        return Response(response=json.dumps("{success: false, message: " + e.args[0] + ", response: null}"), status=501)
 
-def atualizarPlano(id, args):  # Update
+        response = {
+            'success': True,
+            'response': plano,
+            'message': ""
+        }
+            
+        return response
+    except BaseException as e:
+        response = {
+            'success': False,
+            'response': {},
+            'message': e.args[0]
+        }
+        
+        return  response
+
+
+def atualizarPlano(id, newPlano):  # Update
     try:
-        nome = str(args['nome'])
-        descricao = str(args['descricao'])
-        tipo = int(args['tipo'])
-        quantidadeDias = int(args['quantidadeDias'])
-        active = bool(args['active'])
-        deleted = bool(args['deleted'])
-
+        hasPlano = db.session.query(Plano.query.filter_by(id=id, deleted=False).exists()).scalar()
+        
+        if not hasPlano:
+            raise BaseException("Plano não encontrada.")
+        
         plano = db.session.query(Plano).filter_by(id=id, deleted=False).first()
-        
-        if not plano:
-            raise Exception(PlanoSchema().dump(plano))
-        
-        plano.nome = nome
-        plano.descricao = descricao
-        plano.tipo = tipo
-        plano.quantidadeDias = quantidadeDias
-        plano.active = active
-        plano.deleted = deleted
-        
-        db.session.add(plano)
+
+        plano.id = id
+        plano.nome = newPlano.nome
+        plano.descricao = newPlano.descricao
+        plano.tipo = newPlano.tipo
+        plano.quantidadeDias = newPlano.quantidadeDias
+
         db.session.commit()
         
-        return Response(response=json.dumps("{success: true, message: Plano atualizado com sucesso!, response: null}"), status=200)
+        response = {
+            'success': True,
+            'response': {},
+            'message': "Plano atualizado com sucesso!"
+        }
+            
+        return response
     except BaseException as e:
-        return Response(response=json.dumps("{success: false, message: " + e.args[0] + ", response: null}"), status=501)
+        response = {
+            'success': False,
+            'response': {},
+            'message': e.args[0]
+        }
+        
+        return  response
+    except Exception as e:
+        response = {
+            'success': False,
+            'response': {},
+            'message': e.args[0]
+        }
+        
+        return  response
 
 
 def excluirPlano(id):  # Delete
@@ -100,27 +149,40 @@ def excluirPlano(id):  # Delete
         db.session.add(plano)
         db.session.commit()
         
-        return Response(response=json.dumps("{success: true, message: Plano excluido com sucesso!, response: null}"), status=200)
+        response = {
+            'success': True,
+            'response': {},
+            'message': "Plano excluido com sucesso!"
+        }
+            
+        return response
     except BaseException as e:
-        return Response(response=json.dumps("{success: false, message: "+ e.args[0] +", response: null}"), status=501)
+        response = {
+            'success': False,
+            'response': {},
+            'message': e.args[0]
+        }
+        
+        return  response
 
-def exists(nome):
-    exists = db.session.query(db.exists().where(
-        Plano.nome == nome)).scalar()
-    print(str(exists))
-    if exists:
-        return False
-    else:
-        return True
 
-def consultarQuantidade(id):
-    try:
-        quantidades = db.session.query(
-            Dia.Dias.quantidade).filter_by(plano=id).all()
-        array = list()
-        for quantidade in quantidades:
-            array.append(quantidade[0])
-        json_str = json.dumps(array)
-        return json_str
-    except:
-        return False
+# def exists(nome):
+#     exists = db.session.query(db.exists().where(
+#         Plano.nome == nome)).scalar()
+#     print(str(exists))
+#     if exists:
+#         return False
+#     else:
+#         return True
+
+# def consultarQuantidade(id):
+#     try:
+#         quantidades = db.session.query(
+#             Dia.Dias.quantidade).filter_by(plano=id).all()
+#         array = list()
+#         for quantidade in quantidades:
+#             array.append(quantidade[0])
+#         json_str = json.dumps(array)
+#         return json_str
+#     except:
+#         return False
