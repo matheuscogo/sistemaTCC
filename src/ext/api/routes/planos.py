@@ -45,7 +45,7 @@ list_planos = namespace.model('Lista de planos de alimentação', {
 list_planos_response = namespace.model('Resposta da lista de matrizes', {
     'success': fields.Boolean(required=True, description='Condição da requisição'),
     'message': fields.String(required=True, description='Mensagem da requisição'),
-    'response': fields.Nested(list_planos, required=True, description='Mensagem da requisição')
+    'response': fields.Nested(list_planos, skip_none=True, description='Mensagem da requisição')
 })
 
 headers = namespace.parser()
@@ -135,6 +135,7 @@ class UpdatePlano(Resource):
 @namespace.param('id')
 @namespace.expect(headers)
 class GetPlano(Resource):
+    @namespace.marshal_with(list_planos_response)
     def get(self, id):
         """Consulta um plano por id"""
         try:

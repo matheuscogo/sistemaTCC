@@ -10,7 +10,7 @@ namespace = Namespace(name='Registros', description='Registros', path='/registro
 
 list_registros = namespace.model('Lista de registros', {
     'id': fields.Integer(required=True, description='ID do registro'),
-    'matriz': fields.Nested(namespace.model('', {'description': fields.String, 'value': fields.String}), required=True, description='FK da matriz'),
+    'matriz': fields.Nested(namespace.model('', {'description': fields.String, 'value': fields.String}), skip_none=True, description='FK da matriz'),
     'dataEntrada': fields.DateTime(required=True, description='Dia da entrada da matriz no alimentador'),
     'dataSaida': fields.DateTime(required=True, description='Dia da saida da matriz no alimentador'),
     'tempo': fields.Integer(required=True, description='Tempo que a matriz permaneceu no confinamento'),
@@ -20,7 +20,7 @@ list_registros = namespace.model('Lista de registros', {
 list_registros_response = namespace.model('Resposta da lista de registros', {
     'success': fields.Boolean(required=True, description='Condição da requisição'),
     'message': fields.String(required=True, description='Mensagem da requisição'),
-    'response': fields.Nested(list_registros, required=True, description='Mensagem da requisição')
+    'response': fields.Nested(list_registros, skip_none=True, description='Mensagem da requisição')
 })
 
 headers = namespace.parser()
@@ -30,6 +30,7 @@ headers = namespace.parser()
 @namespace.param('id')
 @namespace.expect(headers)
 class GetRegistro(Resource):
+    @namespace.marshal_with(list_registros_response)
     def get(self, id):
         """Consulta um registro por id"""
         try:

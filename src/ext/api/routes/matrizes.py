@@ -30,7 +30,7 @@ list_matrizes = namespace.model('Lista de matrizes', {
 list_matrizes_response = namespace.model('Resposta da lista de matrizes', {
     'success': fields.Boolean(required=True, description='Condição da requisição'),
     'message': fields.String(required=True, description='Mensagem da requisição'),
-    'response': fields.Nested(list_matrizes, required=True, description='Mensagem da requisição')
+    'response': fields.Nested(list_matrizes, skip_none=True, description='Mensagem da requisição')
 })
 
 
@@ -115,6 +115,7 @@ class UpdateMatriz(Resource):
 @namespace.param('id')
 @namespace.expect(headers)
 class GetMatriz(Resource):
+    @namespace.marshal_with(list_matrizes_response)
     def get(self, id):
         """Consulta uma matriz por id"""
         try:
@@ -132,29 +133,7 @@ class GetMatriz(Resource):
             }
         
             return response
-        
-@namespace.route('/getMatrizByRfid/<rfid>')
-@namespace.param('rfid')
-@namespace.expect(headers)
-class GetMatriz(Resource):
-    def get(self, rfid):
-        """Consulta uma matriz por rfid"""
-        try:
-            matriz = matrizCRUD.getMatrizByRfid(rfid=rfid)
-            
-            if not matriz['success']:
-                raise BaseException(matriz['message'])
-            
-            return matriz
-        except BaseException as e:
-            response = {
-                'success': False,
-                'response': {},
-                'message': e.args[0]
-            }
-        
-            return response
-            
+
 
 @namespace.route('/', doc={"description": 'Lista todos os matrizes'})
 @namespace.expect(headers)
