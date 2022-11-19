@@ -50,13 +50,9 @@ def consultarAvisos():  # Read
             Aviso.id, 
             Aviso.type, 
             Aviso.dataAviso, 
-            Aviso.separate, 
+            Aviso.separate,
+            Aviso.confinamentoId,
             Aviso.active, 
-            Matriz.numero.label('matrizNumero')
-        ).join(
-            Confinamento, Confinamento.id == Aviso.confinamentoId
-        ).join(
-            Matriz, Matriz.id == Confinamento.matrizId
         ).filter(
             Aviso.active==True,
             Aviso.deleted==False
@@ -73,11 +69,23 @@ def consultarAvisos():  # Read
             
             # Matriz prestes a parir
             if aviso.type is 2:
-                msg = "Matriz nº " + str(aviso.matrizNumero) + " está prestes a parir"
+                matriz = db.session.query(
+                    Matriz
+                ).join(Confinamento, Confinamento.matrizId == Matriz.id).filter(
+                    Confinamento.active==True,
+                    Matriz.deleted==False,
+                    Confinamento.deleted==False
+                ).first()
+                
+                msg = "Matriz nº " + str(matriz.numero) + " está prestes a parir."
             
             # Reservatório de comida quase vazio
             if aviso.type is 3:
-                msg = "Há pouca ração no reservatório"
+                msg = "Há pouca ração no reservatório."
+                
+            # Reservatório de comida quase vazio
+            if aviso.type is 4:
+                msg = "Matriz sem confinamento."
         
             obj = {
                 'id': aviso.id,
@@ -92,9 +100,21 @@ def consultarAvisos():  # Read
         
             avisos.append(obj)
 
-        return avisos
+        response = {
+            'success': True,
+            'response': avisos,
+            'message': ""
+        }
+            
+        return response
     except BaseException as e:
-        return str(e)
+        response = {
+            'success': False,
+            'response': {},
+            'message': e.args[0]
+        }
+        
+        return  response
 
 def separarMatriz(args):
     try:

@@ -45,53 +45,6 @@ list_registros_response = namespace.model('Resposta da lista de registros', {
 headers = namespace.parser()
 # Aqui podemos adicionar mais parametros ao headers
 
-@namespace.route('/insert')
-@namespace.expect(headers)
-class CreateRegistro(Resource):
-    @namespace.expect(insert_registro, validate=True)
-    def post(self):
-        """Cadastra um registro"""
-        try:
-            parser = reqparse.RequestParser()
-            parser.add_argument('matrizId', type=int)
-            parser.add_argument('dataEntrada', type=str)
-            parser.add_argument('dataSaida', type=str)
-            parser.add_argument('horaEntrada', type=str)
-            parser.add_argument('horaSaida', type=str)
-            parser.add_argument('tempo', type=str)
-            parser.add_argument('quantidade', type=int)
-            args = parser.parse_args()
-            registro = registroCRUD.cadastrarRegistro(args)
-            if not registro:
-                raise Exception("Error")
-            return registro
-        except Exception as e:
-            raise InternalServerError(e.args[0])
-
-@namespace.route('/update/')
-@namespace.expect(headers)
-class UpdateRegistro(Resource):
-    @namespace.expect(update_registro, validate=True)
-    def put(self):
-        """Atualiza um registro"""
-        try:
-            parser = reqparse.RequestParser()
-            parser.add_argument('id', type=int)
-            parser.add_argument('matriz', type=int)
-            parser.add_argument('dataEntrada', type=str)
-            parser.add_argument('dataSaida', type=str)
-            parser.add_argument('horaEntrada', type=str)
-            parser.add_argument('horaSaida', type=str)
-            parser.add_argument('tempo', type=str)
-            parser.add_argument('quantidade', type=int)
-            args = parser.parse_args()
-            registro = registroCRUD.atualizarRegistro(args)
-            if not registro:
-                raise Exception("Error")
-            return registro
-        except Exception as e:
-            raise InternalServerError(e.args[0])
-
 @namespace.route('/<int:id>')
 @namespace.param('id')
 @namespace.expect(headers)
@@ -100,9 +53,19 @@ class GetRegistro(Resource):
         """Consulta um registro por id"""
         try:
             registro = registroCRUD.consultarRegistro(id)
+            
+            if not registro['success']:
+                raise BaseException(registro['message'])
+            
             return registro
-        except HTTPException as e:
-            raise InternalServerError(e.args[0])
+        except BaseException as e:
+            response = {
+                'success': False,
+                'response': {},
+                'message': e.args[0]
+            }
+        
+            return response
 
 
 @namespace.route('/', doc={"description": 'Lista todos os matrizes'})
@@ -113,23 +76,20 @@ class ListaRegistros(Resource):
         """Lista todos os registros"""
         try:
             registros = registroCRUD.consultarRegistros()
-            return { "data": registros }
-        except HTTPException as e:
-            raise InternalServerError(e.args[0])
+            
+            if not registros['success']:
+                raise BaseException(registros['message'])
 
+            return registros
+        except BaseException as e:
+            response = {
+                'success': False,
+                'response': {},
+                'message': e.args[0]
+            }
+            
+            return response
 
-@namespace.route('/delete/<int:id>',
-                 doc={"description": 'Apaga um registro'})
-@namespace.param('id', 'ID do registro')
-@namespace.expect(headers)
-class DeleteRegistro(Resource):
-    def delete(self, id):
-        """Remove um registro"""
-        try:
-            registro = registroCRUD.excluirRegistro(id)
-            return registro
-        except Exception as e:
-            raise InternalServerError(e.args[0])
 
 def bind_with_api(api: Api):
     """

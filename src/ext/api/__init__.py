@@ -30,7 +30,6 @@ confinamentos.bind_with_api(api)
 dias.bind_with_api(api)
 inseminacoes.bind_with_api(api)
 aviso.bind_with_api(api)
-# usuarios.bind_with_api(api)
 
 def init_app(app):
     app.register_blueprint(api.blueprint, url_prefix='/api/v1')
