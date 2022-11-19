@@ -39,7 +39,9 @@ list_registros = namespace.model('Lista de registros', {
 })
 
 list_registros_response = namespace.model('Resposta da lista de registros', {
-    'data': fields.Nested(list_registros, required=True, description='Lista de registros')
+    'success': fields.Boolean(required=True, description='Condição da requisição'),
+    'message': fields.String(required=True, description='Mensagem da requisição'),
+    'response': fields.Nested(list_registros, required=True, description='Mensagem da requisição')
 })
 
 headers = namespace.parser()
