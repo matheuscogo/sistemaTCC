@@ -10,11 +10,6 @@ from werkzeug.exceptions import InternalServerError
 
 namespace = Namespace('Avisos', description='Avisos', path='/avisos')
 
-insert_aviso = namespace.model('Dados para criação de um aviso', {
-    'dataAviso': fields.DateTime(required=True, description='Data de criação do aviso'),
-    'confinamentoId': fields.Integer(required=True, description='FK do confinamento')
-})
-
 update_aviso = namespace.model('Dados para atualizar o aviso', {
     'id': fields.Integer(required=True, description='ID do aviso'),
     'separate': fields.Boolean(required=True, description='Valor da flag')

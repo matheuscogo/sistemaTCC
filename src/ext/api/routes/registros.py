@@ -8,27 +8,6 @@ import json
 
 namespace = Namespace(name='Registros', description='Registros', path='/registros')
 
-insert_registro = namespace.model('Dados para criação de um registro', {
-    'matrizId': fields.Integer(required=True, description='FK da matriz'),
-    'dataEntrada': fields.String(required=True, description='Dia da entrada da matriz no alimentador'),
-    'dataSaida': fields.String(required=True, description='Dia da saida da matriz no alimentador'),
-    'horaEntrada': fields.String(required=True, description='Hora de entrada da matriz no alimentador'),
-    'horaSaida': fields.String(required=True, description='Hora de saida da matriz no alimentador'),
-    'tempo': fields.String(required=True, description='Tempo que a matriz permaneceu no confinamento'),
-    'quantidade': fields.Integer(required=True, description='Quantidade de ração consumida pela matriz')
-})
-
-update_registro = namespace.model('Dados para atualização de um registro', {
-    'id': fields.Integer(required=True, description='ID do registro'),
-    'matrizId': fields.Integer(required=True, description='FK da matriz'),
-    'dataEntrada': fields.String(required=True, description='Dia da entrada da matriz no alimentador'),
-    'dataSaida': fields.String(required=True, description='Dia da saida da matriz no alimentador'),
-    'horaEntrada': fields.String(required=True, description='Hora de entrada da matriz no alimentador'),
-    'horaSaida': fields.String(required=True, description='Hora de saida da matriz no alimentador'),
-    'tempo': fields.String(required=True, description='Tempo que a matriz permaneceu no confinamento'),
-    'quantidade': fields.Integer(required=True, description='Quantidade de ração consumida pela matriz')
-})
-
 list_registros = namespace.model('Lista de registros', {
     'id': fields.Integer(required=True, description='ID do registro'),
     'matriz': fields.Nested(namespace.model('', {'description': fields.String, 'value': fields.String}), required=True, description='FK da matriz'),
