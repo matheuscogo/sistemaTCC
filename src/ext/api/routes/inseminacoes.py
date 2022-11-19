@@ -27,8 +27,8 @@ update_inseminacao = namespace.model('Dados para atualização de inseminações
 list_inseminacoes = namespace.model('Lista de inseminacaoes', {
     'id': fields.String(required=True, description='Identificadores das inseminacaoes'),
     'dataInseminacao': fields.DateTime(required=True, description='Data da inseminação'),
-    'matriz': fields.Nested(namespace.model('', {'description': fields.String, 'value': fields.String}), required=True, description='FK da matriz'),
-    'plano': fields.Nested(namespace.model('', {'description': fields.String, 'value': fields.String}), required=True, description='FK do plano de alimentação'),
+    'matriz': fields.Nested(namespace.model('', {'description': fields.String, 'value': fields.String}), skip_none=True, description='FK da matriz'),
+    'plano': fields.Nested(namespace.model('', {'description': fields.String, 'value': fields.String}), skip_none=True, description='FK do plano de alimentação'),
     'active': fields.Boolean(required=True, description='Verifica se a inseminação está ativo ou não'),
     'deleted': fields.Boolean(required=True, description='Flag que verifica se inseminação está deleteada')
 })
@@ -36,7 +36,7 @@ list_inseminacoes = namespace.model('Lista de inseminacaoes', {
 list_inseminacoes_response = namespace.model('Resposta da lista de matrizes', {
     'success': fields.Boolean(required=True, description='Condição da requisição'),
     'message': fields.String(required=True, description='Mensagem da requisição'),
-    'response': fields.Nested(list_inseminacoes, required=True, description='Mensagem da requisição')
+    'response': fields.Nested(list_inseminacoes, skip_none=True, description='Mensagem da requisição')
 })
 
 
@@ -85,6 +85,7 @@ class CreateInseminacao(Resource):
             
             return response
 
+
 @namespace.route('/update/', methods=["PUT"])
 @namespace.expect(headers)
 class UpdateInseminacao(Resource):
@@ -117,6 +118,7 @@ class UpdateInseminacao(Resource):
 @namespace.param('id')
 @namespace.expect(headers)
 class GetInseminacao(Resource):
+    @namespace.marshal_with(list_inseminacoes_response)
     def get(self, id):
         """Consulta uma inseminação por id"""
         try:

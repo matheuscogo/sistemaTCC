@@ -17,7 +17,7 @@ update_aviso = namespace.model('Dados para atualizar o aviso', {
 
 list_avisos = namespace.model('Lista de avisos', {
     'id': fields.Integer(required=True, description='ID do aviso'),
-    'aviso': fields.Nested(namespace.model('', {'label': fields.String, 'value': fields.Integer}), required=True, description='Descrição da flag separar'),
+    'matriz': fields.Nested(namespace.model('', {'description': fields.String, 'value': fields.String}), skip_none=True, description='FK da matriz'),
     'dataAviso': fields.DateTime(required=True, description='Data da criação do registro do aviso'),
     'separate': fields.Boolean(required=True, description='Flag para separação'),
     'active': fields.Boolean(required=True, description='FK do plano de alimentação')
@@ -26,7 +26,7 @@ list_avisos = namespace.model('Lista de avisos', {
 list_avisos_response = namespace.model('Resposta para lista de avisos', {
     'success': fields.Boolean(required=True, description='Condição da requisição'),
     'message': fields.String(required=True, description='Mensagem da requisição'),
-    'response': fields.Nested(list_avisos, required=True, description='Mensagem da requisição')
+    'response': fields.Nested(list_avisos, skip_none=True, description='Mensagem da requisição')
 })
 
 

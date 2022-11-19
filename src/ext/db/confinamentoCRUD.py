@@ -76,14 +76,40 @@ def cadastrarConfinamento(newConfinamento):  # Create
     
 def consultarConfinamento(id):  # Read
     try:
-        confinamento = db.session.query(Confinamento).filter_by(id=id, deleted=False).first()
-        
+        confinamento = db.session.query(
+            Confinamento.id,
+            Confinamento.dataConfinamento,
+            Matriz.numero.label('numeroMatriz'),
+            Confinamento.matrizId.label('matrizId'),
+            Plano.nome.label('planoNome'),
+            Plano.id.label('planoId'),
+            Confinamento.active
+        ).join(Matriz).join(Plano).filter(
+            Confinamento.id == id,
+            Confinamento.deleted==False, 
+            Confinamento.active==True,
+            Matriz.deleted==False,
+            Plano.deleted==False
+        ).first()
+
         response = {
             'success': True,
-            'response': confinamento,
+            'response': {
+                "id": confinamento.id, 
+                "plano": {
+                    'description': confinamento.planoNome,
+                    'value': confinamento.planoId
+                }, 
+                "matriz": {
+                    'description': confinamento.numeroMatriz,
+                    'value': confinamento.matrizId
+                }, 
+                "dataConfinamento": confinamento.dataConfinamento,
+                "active": confinamento.active
+            },
             'message': ""
         }
-            
+
         return response
     except BaseException as e:
         response = {

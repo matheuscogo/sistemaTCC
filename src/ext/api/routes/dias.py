@@ -11,36 +11,12 @@ list_dias = namespace.model('Lista de dias', {
 })
 
 list_dias_response = namespace.model('Resposta da lista de dias', {
-    'data': fields.Nested(list_dias, required=True, description='Lista de dias')
+    'success': fields.Boolean(required=True, description='Condição da requisição'),
+    'message': fields.String(required=True, description='Mensagem da requisição'),
+    'response': fields.Nested(list_dias, skip_none=True, description='Mensagem da requisição')
 })
-
 headers = namespace.parser()
 # Aqui podemos adicionar mais parametros ao headers
-
-@namespace.route('/<int:dia>/<int:planoId>')
-@namespace.param('dia')
-@namespace.param('planoId')
-@namespace.expect(headers)
-class GetDia(Resource):
-    def get(self, dia, planoId):
-        """Consulta um dia por id"""
-        try:
-            dia = diasCRUD.consultarDia(planoId=planoId, dia=dia)
-            
-            if not dia['success']:
-                raise BaseException(dia['message'])
-
-            return dia
-        except BaseException as e:
-            response = {
-                'success': False,
-                'response': {},
-                'message': e.args[0]
-            }
-            
-            return response
-
-
 
 @namespace.route('/', doc={"description": 'Lista todos os matrizes'})
 @namespace.expect(headers)
@@ -63,7 +39,6 @@ class ListDias(Resource):
             }
             
             return response
-
 
 
 def bind_with_api(api: Api):

@@ -25,15 +25,15 @@ update_confinamento = namespace.model('Dados para atualizar o confinamento', {
 list_confinamento = namespace.model('Lista de confinamentos', {
     'id': fields.Integer(required=True, description='ID da inseminação'),
     'dataConfinamento': fields.String(required=True, description='Data de /entrada no confinamento'),
-    'matriz': fields.Nested(namespace.model('', {'description': fields.String, 'value': fields.String}), required=True, description='FK da matriz'),
-    'plano': fields.Nested(namespace.model('', {'description': fields.String, 'value': fields.String}), required=True, description='FK do plano de alimentação'),
+    'matriz': fields.Nested(namespace.model('', {'description': fields.String, 'value': fields.String}), skip_none=True, description='FK da matriz'),
+    'plano': fields.Nested(namespace.model('', {'description': fields.String, 'value': fields.String}), skip_none=True, description='FK do plano de alimentação'),
     'active': fields.Boolean(required=True, description='Flag que valida se o confinamento está ativo')
 })
 
 list_confinamento_response = namespace.model('Resposta da lista de confinamentos', {
     'success': fields.Boolean(required=True, description='Condição da requisição'),
     'message': fields.String(required=True, description='Mensagem da requisição'),
-    'response': fields.Nested(list_confinamento, required=True, description='Mensagem da requisição')
+    'response': fields.Nested(list_confinamento, skip_none=True, description='Mensagem da requisição')
 })
 
 headers = namespace.parser()
@@ -118,6 +118,7 @@ class UpdateRegistro(Resource):
 @namespace.param('id')
 @namespace.expect(headers)
 class GetRegistro(Resource):
+    @namespace.marshal_with(list_confinamento_response)
     def get(self, id):
         """Consulta um registro por id"""
         try:
