@@ -33,11 +33,6 @@ list_matrizes_response = namespace.model('Resposta da lista de matrizes', {
     'response': fields.Nested(list_matrizes, required=True, description='Mensagem da requisição')
 })
 
-delete_response = namespace.model('Resposta da remocao de matrizes', {
-    'success': fields.Boolean(required=True, description='Condição da requisição'),
-    'message': fields.String(required=True, description='Mensagem da requisição'),
-    'response': fields.Nested(namespace.model('', {}), required=True, description='Mensagem da requisição')
-})
 
 headers = namespace.parser()
 # Aqui podemos adicionar mais parametros ao headers
@@ -190,7 +185,6 @@ class ListMatrizes(Resource):
 @namespace.param('id', 'ID da matriz')
 @namespace.expect(headers)
 class DeleteMatriz(Resource):
-    @namespace.marshal_with(delete_response)
     def delete(self, id):
         """Remove matrizes"""
         try:
