@@ -117,7 +117,7 @@ class UpdateRegistro(Resource):
 @namespace.route('/<int:id>')
 @namespace.param('id')
 @namespace.expect(headers)
-class GetRegistro(Resource):
+class GetConfinamento(Resource):
     @namespace.marshal_with(list_confinamento_response)
     def get(self, id):
         """Consulta um registro por id"""
