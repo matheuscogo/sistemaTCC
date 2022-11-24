@@ -36,10 +36,9 @@ list_planos = namespace.model('Lista de planos de alimentação', {
     'id': fields.Integer(required=True, description='ID do plano de alimentação'),
     'nome': fields.String(required=True, description='Nome do plano de alimentação'),
     'descricao': fields.String(required=True, description='Descrição do plano de alimentação'),
-    'tipo': fields.Integer(required=True, description='Tipo do plano de alimentação'),
+    'tipo': fields.Nested(namespace.model('', {"description": fields.String, "value": fields.Integer}), skip_none=True, description='Tipo de plano'),
     'quantidadeDias': fields.Integer(required=True, description='Quantidade de dias do plano de alimentação'),
     'active': fields.Boolean(required=True, description='Verifica se o plano de alimentação está ativo ou não'),
-    'deleted': fields.Boolean(required=True, description='Verifica se o plano de alimentação está deletado ou não')   
 })
 
 list_planos_response = namespace.model('Resposta da lista de matrizes', {

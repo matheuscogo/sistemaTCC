@@ -55,8 +55,37 @@ def cadastrarPlano(plano):  # Create
 
 def consultarPlanos():  # Read
     try:
-        planos = db.session.query(Plano).filter_by(deleted=False).all()
+        response = db.session.query(Plano).filter_by(deleted=False).all()
         
+        planos = []
+
+        for plano in response:
+            
+            tipo = {}
+            
+            if plano.tipo is '1':
+                tipo =  {
+                    'description': "Gestação",
+                    'value': "1",
+                }
+            
+            if plano.tipo is '2':
+                tipo =  {
+                    'description': "Pré - Gestação",
+                    'value': "2",
+                }
+                
+            obj = {
+                "id": plano.id, 
+                "nome": plano.nome, 
+                "descricao": plano.descricao, 
+                "quantidadeDias": plano.quantidadeDias, 
+                "tipo": tipo,
+                "active": plano.active
+            }
+            
+            planos.append(obj)
+            
         response = {
             'success': True,
             'response': planos,

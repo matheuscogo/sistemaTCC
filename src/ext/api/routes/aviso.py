@@ -17,7 +17,7 @@ update_aviso = namespace.model('Dados para atualizar o aviso', {
 
 list_avisos = namespace.model('Lista de avisos', {
     'id': fields.Integer(required=True, description='ID do aviso'),
-    'matriz': fields.Nested(namespace.model('', {'description': fields.String, 'value': fields.String}), skip_none=True, description='FK da matriz'),
+    'aviso': fields.String(skip_none=True, description='FK da matriz'),
     'dataAviso': fields.DateTime(required=True, description='Data da criação do registro do aviso'),
     'separate': fields.Boolean(required=True, description='Flag para separação'),
     'active': fields.Boolean(required=True, description='FK do plano de alimentação')

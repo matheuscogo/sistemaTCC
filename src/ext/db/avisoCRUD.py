@@ -89,10 +89,7 @@ def consultarAvisos():  # Read
         
             obj = {
                 'id': aviso.id,
-                'aviso': {
-                    'label': msg,
-                    'value': aviso.type
-                },
+                'aviso': msg,
                 'dataAviso': aviso.dataAviso,
                 'separate': aviso.separate,
                 'active': aviso.active
