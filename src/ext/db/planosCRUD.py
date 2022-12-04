@@ -63,13 +63,13 @@ def consultarPlanos():  # Read
             
             tipo = {}
             
-            if plano.tipo is '1':
+            if plano.tipo == '1':
                 tipo =  {
                     'description': "Gestação",
                     'value': "1",
                 }
             
-            if plano.tipo is '2':
+            if plano.tipo == '2':
                 tipo =  {
                     'description': "Pré - Gestação",
                     'value': "2",

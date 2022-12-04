@@ -74,3 +74,17 @@ CREATE TABLE IF NOT EXISTS avisos (
   PRIMARY KEY (id),
   CONSTRAINT fk_confinamento_id FOREIGN KEY("confinamento_id") REFERENCES confinamentos (id)
 );
+
+CREATE TABLE IF NOT EXISTS alimentador  (
+  id INTEGER NOT NULL,
+  matriz_id INTEGER,
+  confinamento_id INTEGER,
+  plano_id INTEGER,
+  dataEntrada DATETIME,
+  quantidade INTEGER,
+  hash VARCHAR,
+  PRIMARY KEY (id),
+  FOREIGN KEY(matriz_id) REFERENCES matrizes (id),
+  FOREIGN KEY(confinamento_id) REFERENCES confinamentos (id),
+  FOREIGN KEY(plano_id) REFERENCES planos (id)
+);
