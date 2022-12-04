@@ -1,7 +1,7 @@
 def init_app(app):
     app.config["DEBUG"] = True
     # app.config["SQLALCHEMY_DATABASE_URI"] = 'postgresql://postgres:postgres@localhost:5432/sistemaTCC'
-    app.config["SQLALCHEMY_DATABASE_URI"] = 'sqlite:///sistemaTCC-old.db'
+    app.config["SQLALCHEMY_DATABASE_URI"] = 'sqlite:///sistemaTCC.db'
     app.config["SQLALCHEMY_BINDS"] = False
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
     app.config['CORS_HEADERS'] = "Content-Type"
