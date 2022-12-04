@@ -44,7 +44,7 @@ def cadastrarInseminacao(newInseminacao, isNewCiclo):  # Create
         
         if isNewCiclo:
             matriz = db.session.query(Matriz).filter_by(
-                id=inseminacao.matrizId, deleted=False).first()
+                id=newInseminacao.matrizId, deleted=False).first()
             
             matriz.ciclos = matriz.ciclos + 1
             db.session.flush()
@@ -98,13 +98,25 @@ def consultarInseminacoes():  # Read
         response = db.session.query(
             Inseminacao.id,
             Inseminacao.dataInseminacao,
+            Confinamento.matrizId.label('matrizId'),
             Matriz.numero.label('numeroMatriz'),
-            Inseminacao.matrizId.label('matrizId'),
             Plano.nome.label('planoNome'),
             Plano.id.label('planoId'),
-            # Confinamento.id,
+            Confinamento.id.label("confinamentoId"),
+            Confinamento.dataConfinamento.label("dataConfinamento"),
             Inseminacao.active
-        ).join(Matriz).join(Plano).filter(
+        ).join(
+            Confinamento,
+            Inseminacao.confinamentoId == Confinamento.id 
+        ).join(
+            Plano,
+            Plano.id == Confinamento.planoId
+        ).join(
+            Matriz,
+            Matriz.id == Confinamento.matrizId
+        ).filter(
+            Confinamento.active == True,
+            Confinamento.deleted == False,
             Inseminacao.deleted==False, 
             Inseminacao.active==True,
             Matriz.deleted==False,
@@ -116,10 +128,10 @@ def consultarInseminacoes():  # Read
         for inseminacao in response:
             obj = {
                 "id": inseminacao.id, 
-                # "confinamento": {
-                #     'description': inseminacao.dataConfinamento,
-                #     'value': inseminacao.confinamentoId
-                # }, 
+                "confinamento": {
+                    'description': inseminacao.dataConfinamento,
+                    'value': inseminacao.confinamentoId
+                }, 
                 "plano": {
                     'description': inseminacao.planoNome,
                     'value': inseminacao.planoId

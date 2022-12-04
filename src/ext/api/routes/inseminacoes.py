@@ -27,8 +27,9 @@ update_inseminacao = namespace.model('Dados para atualização de inseminações
 list_inseminacoes = namespace.model('Lista de inseminacaoes', {
     'id': fields.String(required=True, description='Identificadores das inseminacaoes'),
     'dataInseminacao': fields.DateTime(required=True, description='Data da inseminação'),
-    'matriz': fields.Nested(namespace.model('', {'description': fields.String, 'value': fields.String}), skip_none=True, description='FK da matriz'),
-    'plano': fields.Nested(namespace.model('', {'description': fields.String, 'value': fields.String}), skip_none=True, description='FK do plano de alimentação'),
+    'confinamento': fields.Nested(namespace.model('', {'description': fields.String, 'value': fields.String}), skip_none=True, description='Confinamento'),
+    'matriz': fields.Nested(namespace.model('', {'description': fields.String, 'value': fields.String}), skip_none=True, description='Matriz'),
+    'plano': fields.Nested(namespace.model('', {'description': fields.String, 'value': fields.String}), skip_none=True, description='Plano'),
     'active': fields.Boolean(required=True, description='Verifica se a inseminação está ativo ou não'),
     'deleted': fields.Boolean(required=True, description='Flag que verifica se inseminação está deleteada')
 })
