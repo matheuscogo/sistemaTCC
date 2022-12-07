@@ -1,11 +1,6 @@
-from ...site.model import PlanoSchema
 from ...site.model import Plano
-from ...db import db, planosCRUD
+from ...db import planosCRUD
 from flask_restx import Api, Namespace, Resource, fields, reqparse
-from werkzeug.exceptions import HTTPException
-from werkzeug.exceptions import NotFound
-from werkzeug.exceptions import InternalServerError
-import json
 
 namespace = Namespace(name='Planos de alimentação', description='Planos', path='/planos')
 

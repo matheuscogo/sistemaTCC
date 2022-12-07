@@ -1,5 +1,5 @@
 from flask import Blueprint
-from flask_restx import Api, resource
+from flask_restx import Api
 from flask_cors import CORS
 
 from .routes import inseminacoes, matrizes, planos, registros, confinamentos, dias, aviso

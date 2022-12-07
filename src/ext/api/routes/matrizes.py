@@ -1,9 +1,6 @@
-from ext.site.model import Matriz, MatrizSchema
-from ...db import db, matrizCRUD
+from ext.site.model import Matriz
+from ...db import matrizCRUD
 from flask_restx import Api, Namespace, Resource, fields, reqparse
-from werkzeug.exceptions import HTTPException
-from werkzeug.exceptions import NotFound
-from werkzeug.exceptions import InternalServerError
 
 namespace = Namespace(name='Matrizes', description='Matrizes', path='/matrizes')
 

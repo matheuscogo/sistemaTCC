@@ -1,11 +1,5 @@
-from datetime import datetime
 from ext.db import avisoCRUD
-from ...db import db
 from flask_restx import Api, Namespace, Resource, fields, reqparse
-from ext.site.model import Aviso
-from ext.site.model import AvisoSchema
-from werkzeug.exceptions import HTTPException
-from werkzeug.exceptions import NotFound
 from werkzeug.exceptions import InternalServerError
 
 namespace = Namespace('Avisos', description='Avisos', path='/avisos')

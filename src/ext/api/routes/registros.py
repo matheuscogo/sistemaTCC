@@ -1,10 +1,5 @@
-from ext.site.model import Registro, RegistroSchema
 from ...db import registroCRUD
-from flask_restx import Api, Namespace, Resource, fields, reqparse
-from werkzeug.exceptions import HTTPException
-from werkzeug.exceptions import NotFound
-from werkzeug.exceptions import InternalServerError
-import json
+from flask_restx import Api, Namespace, Resource, fields
 
 namespace = Namespace(name='Registros', description='Registros', path='/registros')
 

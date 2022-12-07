@@ -1,10 +1,7 @@
 from datetime import datetime
-from ext.site.model import Inseminacao, InseminacaoSchema
-from ...db import db, inseminacaoCRUD
+from ext.site.model import Inseminacao
+from ...db import inseminacaoCRUD
 from flask_restx import Api, Namespace, Resource, fields, reqparse
-from werkzeug.exceptions import HTTPException
-from werkzeug.exceptions import NotFound
-from werkzeug.exceptions import InternalServerError
 
 namespace = Namespace(name='Inseminação', description='Inseminação', path='/inseminacoes')
 

@@ -1,12 +1,7 @@
 from datetime import datetime
 from ext.db import confinamentoCRUD
-from ...db import db
 from flask_restx import Api, Namespace, Resource, fields, reqparse
 from ext.site.model import Confinamento
-from ext.site.model import ConfinamentoSchema
-from werkzeug.exceptions import HTTPException
-from werkzeug.exceptions import NotFound
-from werkzeug.exceptions import InternalServerError
 
 namespace = Namespace('Confinamentos', description='Confinamentos', path='/confinamentos')
 
