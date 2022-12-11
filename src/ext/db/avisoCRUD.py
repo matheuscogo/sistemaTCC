@@ -1,24 +1,10 @@
-from genericpath import exists
-from queue import Empty
-
-from responses import activate, delete
-
-from ext.site.model import Inseminacao
-from ..site.model import Aviso
-from ..site.model import Registro
-from ..site.model import Confinamento, ConfinamentoSchema
+from ..site.model import Aviso, Confinamento
 from ..db import db
-import datetime
-from werkzeug.wrappers import Response, Request
+from werkzeug.wrappers import Response
 from xmlrpc.client import ResponseError
 import json
-from ..site.model import Dia
-from ..site.model import Plano
 from ..site.model import Matriz
-from ..site.model import Registro
 from ..db import db
-from sqlalchemy.sql import func
-from datetime import datetime, timedelta
 
 def cadastrarAviso(aviso):  # Create
     try:
@@ -37,10 +23,53 @@ def cadastrarAviso(aviso):  # Create
         return Response(response=json.dumps("{success: false, message: " + e.args[0] + ", response: null}"))
 
 
-def consultarConfinamento(id):  # Read
+def consultarAviso(id):  # Read
     try:
-        confinamento = db.session.query(Confinamento).filter_by(id=id, active=True).first()
-        return ConfinamentoSchema().dump(confinamento)
+        aviso = db.session.query(Aviso).filter_by(id=id, active=True).first()
+        
+        msg = ''
+        
+        # Matriz sem brinco
+        if aviso.tipo == 1:
+            msg = "Matriz sem brinco"
+        
+        # Matriz prestes a parir
+        if aviso.tipo == 2:
+            matriz = db.session.query(
+                Matriz
+            ).join(Confinamento, Confinamento.matrizId == Matriz.id).filter(
+                Confinamento.active==True,
+                Matriz.deleted==False,
+                Confinamento.deleted==False
+            ).first()
+            
+            msg = "Matriz nº " + str(matriz.numero) + " está prestes a parir."
+        
+        # Reservatório de comida quase vazio
+        if aviso.tipo == 3:
+            msg = "Há pouca ração no reservatório."
+            
+        # Reservatório de comida quase vazio
+        if aviso.tipo == 4:
+            msg = "Matriz sem confinamento."
+        
+        obj = {
+                'id': aviso.id,
+                'aviso': msg,
+                'dataAviso': aviso.dataAviso,
+                'separate': aviso.separate,
+                'tipo': aviso.tipo,
+                'active': aviso.active
+            }
+        
+
+        response = {
+            'success': True,
+            'response': obj,
+            'message': ""
+        }
+        
+        return response
     except BaseException as e:
         return str(e)
 
@@ -48,7 +77,7 @@ def consultarAvisos():  # Read
     try:
         responses = db.session.query(
             Aviso.id, 
-            Aviso.type, 
+            Aviso.tipo, 
             Aviso.dataAviso, 
             Aviso.separate,
             Aviso.confinamentoId,
@@ -64,11 +93,11 @@ def consultarAvisos():  # Read
             msg = ''
             
             # Matriz sem brinco
-            if aviso.type is 1:
+            if aviso.tipo == 1:
                 msg = "Matriz sem brinco"
             
             # Matriz prestes a parir
-            if aviso.type is 2:
+            if aviso.tipo == 2:
                 matriz = db.session.query(
                     Matriz
                 ).join(Confinamento, Confinamento.matrizId == Matriz.id).filter(
@@ -80,11 +109,11 @@ def consultarAvisos():  # Read
                 msg = "Matriz nº " + str(matriz.numero) + " está prestes a parir."
             
             # Reservatório de comida quase vazio
-            if aviso.type is 3:
+            if aviso.tipo == 3:
                 msg = "Há pouca ração no reservatório."
                 
             # Reservatório de comida quase vazio
-            if aviso.type is 4:
+            if aviso.tipo == 4:
                 msg = "Matriz sem confinamento."
         
             obj = {
@@ -92,6 +121,7 @@ def consultarAvisos():  # Read
                 'aviso': msg,
                 'dataAviso': aviso.dataAviso,
                 'separate': aviso.separate,
+                'tipo': aviso.tipo,
                 'active': aviso.active
             }
         
@@ -113,106 +143,50 @@ def consultarAvisos():  # Read
         
         return  response
 
-def separarMatriz(args):
+def separarMatriz(id, separar):
     try:
-        id = args['id']    
-        separar = args['separar']
+        aviso = db.session.query(Aviso).filter_by(id=id).first()
 
-        aviso = db.session.query(Aviso.Aviso).filter_by(id=id).first()
-
-        aviso.separar = separar
+        aviso.separate = separar
         
         db.session.commit()
-        return Response(response=json.dumps("{success: true, message: Aviso atualizado com sucesso!, response: null}"), status=200)
+        
+        response = {
+            'success': True,
+            'response': {},
+            'message': "Aviso atualizado com sucesso!"
+        }
+        
+        return response
     except BaseException as e:
-        return Response(response=json.dumps("{success: false, message: " + e.args[0] + ", response: null}"), status=501)
+        response = {
+            'success': False,
+            'response': {},
+            'message': e.args[0]
+        }
+        
+        return  response
 
-def excluirConfinamento(id):  # Delete
+def excluirAviso(id):  # Delete
     try:
-        confinameto = db.session.query(Confinamento).filter_by(id=id).first()
-        db.session.delete(confinameto)
+        aviso = db.session.query(Aviso).filter_by(id=id).first()
+        
+        aviso.deleted = True
+        
         db.session.commit()
-        return Response(response=json.dumps("{success: true, message: Confinameto excluido com sucesso!, response: null}"), status=200)
+        
+        response = {
+            'success': True,
+            'response': {},
+            'message': "Aviso excluido com sucesso!"
+        }
+        
+        return response
     except BaseException as e:
-        return Response(response=json.dumps("{success: false, message: "+ e.args[0] +", response: null}"), status=501)
-
-
-def getConfinamentoByMatriz(matrizId):
-    try:
-        confinamento = db.session.query(Confinamento.Confinamento).filter_by(matrizId=matrizId, active=True).first()
-        return ConfinamentoSchema().dump(confinamento)
-    except BaseException as e:
-        return str(e)
-
-
-def getQuantityForMatriz(matrizId):
-    try:
-        confinamento = db.session.query(Confinamento.Confinamento).filter_by(matrizId=matrizId, active=True).first()
-        matrizId = confinamento.matrizId
-        planoId = confinamento.planoId
-        dataEntrada =  datetime.today().strftime('%d/%m/%y')
+        response = {
+            'success': False,
+            'response': {},
+            'message': e.args[0]
+        }
         
-        day = getDaysInConfinament(matrizId=matrizId)
-        dayQuantity = db.session.query(Dia.Dias.quantidade).filter_by(planoId=planoId, dia=day).first()[0]
-        totalQuantity = db.session.query(func.sum(Registro.quantidade)).filter_by(matrizId=matrizId, dataEntrada=dataEntrada).first()[0]
-        
-        if totalQuantity == None:
-            totalQuantity = 0
-        
-        total = dayQuantity - totalQuantity
-        
-        if total <= 0:
-            total = 0
-            
-        return total
-    except BaseException as e:
-        return e.args[0]
-
-
-def canOpenDoor(matrizId):
-    try:
-
-        hasInseminacao = db.session.query(Inseminacao.Inseminacao.query.filter_by(matrizId=matrizId, active=True).exists()).scalar()
-        
-        if not hasInseminacao:
-            return "Matriz não possui inseminação valida"
-
-        day = getDaysInConfinament(matrizId=matrizId)
-
-        # paramters = getParameters
-        if day >= 110:
-            # Aviso já foi inserido?
-            #if avisoInserido:
-            return True
-        else:
-            return False
-    except BaseException as e:
-        return e.args[0]
-
-
-def verifyDaysToOpen():
-    try:
-        inseminacao = db.session.query(Inseminacao.Inseminacao).filter_by(active=True).all()
-        
-        for item in inseminacao:
-            day = getDaysInConfinament(matrizId=item.matrizId)
-
-            # paramters = getParameters
-            if day >= 2:
-                # Aviso já foi inserido?
-                #if avisoInserido:
-                return True
-            else:
-                return False
-    except BaseException as e:
-        return e.args[0]
-
-
-def getDaysInConfinament(matrizId):
-    confinamento = db.session.query(Confinamento.Confinamento).filter_by(matrizId=matrizId, active=True).first()
-    dataEntrada = datetime.strptime(confinamento.dataConfinamento, '%d/%m/%y')
-    dataAtual = datetime.today()
-    days = dataAtual - dataEntrada
-    print("DIA ENTRADA = " + str(dataEntrada))
-    print("DIA ATUAL = " + str(dataAtual))
-    return days.days
+        return  response

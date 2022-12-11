@@ -1,9 +1,5 @@
-from ..site.model import Registro, Matriz
-from ..site.model import RegistroSchema
+from ..site.model import Registro, Matriz, Confinamento
 from ..db import db
-from werkzeug.wrappers import Response, Request
-from datetime import datetime
-import json
 
 
 def consultarRegistros():  # Read
@@ -15,7 +11,13 @@ def consultarRegistros():  # Read
             Registro.quantidade,
             Registro.matrizId,
             Matriz.numero.label('numeroMatriz'),
-        ).join(Matriz).filter(
+        ).join(
+            Confinamento,
+            Confinamento.id == Registro.confinamentoId
+        ).join(
+            Matriz,
+            Matriz.id == Confinamento.matrizId
+        ).filter(
             Matriz.deleted==False,
         ).all()
         

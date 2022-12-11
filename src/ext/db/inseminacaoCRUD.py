@@ -11,12 +11,12 @@ from ..db import db
 from werkzeug.wrappers import Response, Request
 import json
 
-def cadastrarInseminacao(newInseminacao, isNewCiclo):  # Create
+def cadastrarInseminacao(newInseminacao, planoId, isNewCiclo):  # Create
     try:
         if not newInseminacao.matrizId:
             raise Exception("Matriz não repassada para o controlador.")
 
-        if not newInseminacao.planoId:
+        if not planoId:
             raise Exception("Plano não repassada para o controlador.")
 
         if not newInseminacao.dataInseminacao:
@@ -50,7 +50,7 @@ def cadastrarInseminacao(newInseminacao, isNewCiclo):  # Create
             db.session.flush()
         
         newConfinamento = Confinamento(
-            planoId=newInseminacao.planoId,
+            planoId=planoId,
             matrizId=newInseminacao.matrizId,
             dataConfinamento=newInseminacao.dataInseminacao,
             active=newInseminacao.active,

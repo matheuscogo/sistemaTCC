@@ -61,14 +61,13 @@ class CreateInseminacao(Resource):
             args = parser.parse_args()
             
             inseminacao = Inseminacao(
-                planoId = args['planoId'],
                 matrizId = args['matrizId'],
                 dataInseminacao = args['dataInseminacao'],
                 active=True,
                 deleted=False,
             )
             
-            inseminacao = inseminacaoCRUD.cadastrarInseminacao(inseminacao, args['isNewCiclo'])
+            inseminacao = inseminacaoCRUD.cadastrarInseminacao(inseminacao, args['planoId'], args['isNewCiclo'])
             
             if not inseminacao['success']:
                 raise BaseException(inseminacao['message'])

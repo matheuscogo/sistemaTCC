@@ -60,7 +60,7 @@ def consultarMatriz(id):  # Read
         
         response = {
             'success': True,
-            'response': MatrizSchema().dump(matriz),
+            'response': matriz,
             'message': ""
         }
             
@@ -73,56 +73,8 @@ def consultarMatriz(id):  # Read
         }
         
         return response
-    
-def getMatriz(id):  # Read
-    try:
-        matriz = db.session.query(Matriz).filter_by(id=id, deleted=False).first()
-        
-        response = {
-            'success': True,
-            'response': MatrizSchema().dump(matriz),
-            'message': ""
-        }
-            
-        return response
-    except Exception as e:
-        response = {
-            'success': False,
-            'response': {},
-            'message': e.args[0]
-        }
-        
-        return response
-    
-def getMatrizByRfid(rfid):  # Read
-    try:
-        matriz = db.session.query(
-            Matriz.id,
-            Matriz.rfid,
-            Matriz.numero,
-            Matriz.ciclos
-        ).filter_by(
-            rfid=rfid, 
-            deleted=False
-        ).first()
-        
-        response = {
-            'success': True,
-            'response': MatrizSchema().dump(matriz),
-            'message': ""
-        }
-            
-        return response
-    except Exception as e:
-        response = {
-            'success': False,
-            'response': {},
-            'message': e.args[0]
-        }
-        
-        return response
-    
-    
+
+
 def atualizarMatriz(id, matriz):  # Update
     try:
         hasMatriz = db.session.query(Matriz.Matriz.query.filter_by(id=id, delted=False).exists()).scalar()
@@ -184,34 +136,3 @@ def excluirMatriz(id):  # Delete
         }
         
         return  response
-    
-# def consultarMatrizRFID(rfid):  # Read
-#     try:
-#         matriz = db.session.query(Matriz).filter_by(rfid=rfid, deleted=False).first()
-#         return matriz
-#     except Exception as e:
-#         return e.args[0]
-    
-# def existsRFID(rfid):
-#     exists = db.session.query(db.exists().where(Matriz.Matriz.rfid == rfid)).scalar()
-#     if exists:
-#         return False
-#     else:
-#         return True
-    
-# def existsNumero(numero):
-#     exists = db.session.query(db.exists().where(Matriz.Matriz.numero == numero)).scalar()
-#     print(str(exists))
-#     if exists:
-#         return False
-#     else:
-#         return True
-    
-# def consultarMatrizRFID(rfid):  # Read
-#     try:
-#         matriz = db.session.query(Matriz.Matriz.id).filter_by(rfid=rfid).first()
-#         a = str(matriz).replace(", )", "")
-#         id = str(a).replace("(", "")
-#         return matriz[0]
-#     except:
-#         return False

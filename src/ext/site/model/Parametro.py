@@ -1,17 +1,13 @@
 from ...db import db, ma
 
 class Parametro(db.Model):
-    __tablename__ = 'parameters'
+    __tablename__ = "parametros"
     # __table_args__ = {"schema":"public"}
     id = db.Column("id", db.Integer, primary_key=True, autoincrement=True)
-    motorOpen = db.Column("rfid", db.Boolean)
-    motorClose = db.Column("rfid", db.Boolean)
-    motorFeed = db.Column("rfid", db.Boolean)
-    quantity = db.Column("rfid", db.Boolean)
-    time = db.Column("rfid", db.Boolean)
-    rfid = db.Column("rfid", db.Boolean)
-    rfid = db.Column("rfid", db.Boolean)
-    rfid = db.Column("rfid", db.Boolean)
+    tempoPorcao = db.Column("tempo_porcao", db.Integer)
+    quantidadePorcao = db.Column("quantidade_porcao", db.Integer)
+    intervaloPorcoes = db.Column("intervalo_porcoes", db.Integer)
+    tempoProximaMatriz = db.Column("tempo_proxima_matriz", db.Integer)
     
 class ParametroSchema(ma.SQLAlchemyAutoSchema):
     class Meta:

@@ -39,6 +39,28 @@ class ListDias(Resource):
             }
             
             return response
+        
+@namespace.route('/<int:planoId>/<int:dia>', doc={"description": 'Lista todos os matrizes'})
+@namespace.expect(headers)
+class GetDias(Resource):
+    @namespace.marshal_with(list_dias_response)
+    def get(self, dia, planoId):
+        """Consulta um dias"""
+        try:
+            dias = diasCRUD.consultarDia(planoId=planoId, dia=dia)
+            
+            if not dias['success']:
+                raise BaseException(dias['message'])
+
+            return dias
+        except BaseException as e:
+            response = {
+                'success': False,
+                'response': {},
+                'message': e.args[0]
+            }
+            
+            return response
 
 
 def bind_with_api(api: Api):

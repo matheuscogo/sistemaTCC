@@ -14,6 +14,7 @@ list_avisos = namespace.model('Lista de avisos', {
     'aviso': fields.String(skip_none=True, description='FK da matriz'),
     'dataAviso': fields.DateTime(required=True, description='Data da criação do registro do aviso'),
     'separate': fields.Boolean(required=True, description='Flag para separação'),
+    'tipo': fields.Integer(required=True, description='FK do plano de alimentação'),
     'active': fields.Boolean(required=True, description='FK do plano de alimentação')
 })
 
@@ -28,7 +29,7 @@ headers = namespace.parser()
 
 @namespace.route('/separarMatriz', methods=['PUT'])
 @namespace.expect(headers)
-class UpdateRegistro(Resource):
+class UpdateAviso(Resource):
     @namespace.expect(update_aviso, validate=True)
     def put(self):
         """Autorização de separação de uma matriz"""
@@ -39,7 +40,11 @@ class UpdateRegistro(Resource):
             parser.add_argument('separate', type=bool)
 
             args = parser.parse_args()
-            aviso = avisoCRUD.separarMatriz(args)
+            
+            id = args['id']    
+            separar = args['separate']
+            
+            aviso = avisoCRUD.separarMatriz(id=id, separar=separar)
             
             if not aviso:
                 raise Exception("Error")
@@ -62,6 +67,29 @@ class ListAvisos(Resource):
                 raise BaseException(avisos['message'])
             
             return avisos
+        except BaseException as e:
+            response = {
+                'success': False,
+                'response': {},
+                'message': e.args[0]
+            }
+        
+            return response
+
+
+@namespace.route('/delete/<int:id>')
+@namespace.param('id', 'ID do aviso')
+@namespace.expect(headers)
+class DeleteConfinamento(Resource):
+    def delete(self, id):
+        """Remove um aviso"""
+        try:
+            aviso = avisoCRUD.excluirAviso(id)
+            
+            if not aviso['success']:
+                raise BaseException(aviso['message'])
+            
+            return aviso
         except BaseException as e:
             response = {
                 'success': False,
