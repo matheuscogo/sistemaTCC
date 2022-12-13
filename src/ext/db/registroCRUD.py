@@ -9,7 +9,7 @@ def consultarRegistros():  # Read
             Registro.dataEntrada,
             Registro.dataSaida,
             Registro.quantidade,
-            Registro.matrizId,
+            Matriz.id.label('matrizId'),
             Matriz.numero.label('numeroMatriz'),
         ).join(
             Confinamento,

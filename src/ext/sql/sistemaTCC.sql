@@ -119,4 +119,4 @@ CREATE TABLE parametros  (
   PRIMARY KEY (id)
 );
 
-INSERT INTO parametros VALUES (1, 30, 500, 30, 60)
+INSERT INTO parametros VALUES (1, 30, 500, 30, 60, 45)

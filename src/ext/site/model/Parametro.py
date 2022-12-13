@@ -8,7 +8,8 @@ class Parametro(db.Model):
     quantidadePorcao = db.Column("quantidade_porcao", db.Integer)
     intervaloPorcoes = db.Column("intervalo_porcoes", db.Integer)
     tempoProximaMatriz = db.Column("tempo_proxima_matriz", db.Integer)
-    
+    tempoSemBrinco = db.Column("tempo_sem_brinco", db.Integer)
+
 class ParametroSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Parametro

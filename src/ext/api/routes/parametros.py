@@ -9,14 +9,16 @@ update_parametros = namespace.model('Dados para atualização do parametro', {
     'quantidadePorcao': fields.Integer(required=True, description='Quantidade'),
     'intervaloPorcoes': fields.Integer(required=True, description='Intervalo'),
     'tempoProximaMatriz': fields.Integer(required=True, description='Abrir'),
+    'tempoSemBrinco': fields.Integer(required=True, description='Tempo Sem Brinco'),
 })
 
 list_parametros = namespace.model('Lista de parametros', {
-    'id': fields.String(required=True, description='Identificador do plano'),
+    'id': fields.Integer(required=True, description='Identificador do plano'),
     'tempoPorcao': fields.Integer(required=True, description='Porção'),
     'quantidadePorcao': fields.Integer(required=True, description='Quantidade'),
     'intervaloPorcoes': fields.Integer(required=True, description='Intervalo'),
     'tempoProximaMatriz': fields.Integer(required=True, description='Abrir'),
+    'tempoSemBrinco': fields.Integer(required=True, description='Tempo Sem Brinco'),
 })
 
 list_parametros_response = namespace.model('Resposta da lista de parametros', {
@@ -30,7 +32,7 @@ list_parametros_response = namespace.model('Resposta da lista de parametros', {
 headers = namespace.parser()
 # Aqui podemos adicionar mais parametros ao headers
 
-@namespace.route('/update', methods=["PUT"])
+@namespace.route('/update/', methods=["PUT"])
 @namespace.expect(headers)
 class UpdateParametro(Resource):
     @namespace.expect(update_parametros, validate=True)
@@ -43,6 +45,7 @@ class UpdateParametro(Resource):
             parser.add_argument('quantidadePorcao', type=int)
             parser.add_argument('intervaloPorcoes', type=int)
             parser.add_argument('tempoProximaMatriz', type=int)
+            parser.add_argument('tempoSemBrinco', type=int)
             
             args = parser.parse_args()
             
@@ -50,7 +53,8 @@ class UpdateParametro(Resource):
                 tempoPorcao = args['tempoPorcao'],
                 quantidadePorcao = args['quantidadePorcao'],
                 intervaloPorcoes = args['intervaloPorcoes'],
-                tempoProximaMatriz = args['tempoProximaMatriz']
+                tempoProximaMatriz = args['tempoProximaMatriz'],
+                tempoSemBrinco = args['tempoSemBrinco']
             ) 
 
             parametro = parametroCRUD.atualizarParamtro(id=1, parametro=parametro)

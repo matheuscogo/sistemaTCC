@@ -14,6 +14,7 @@ def consultarParametros():  # Read
                 'quantidadePorcao': parametro.quantidadePorcao,
                 'intervaloPorcoes': parametro.intervaloPorcoes,
                 'tempoProximaMatriz': parametro.tempoProximaMatriz,
+                'tempoSemBrinco': parametro.tempoSemBrinco,
             },
             "message": ""
         }
@@ -36,7 +37,8 @@ def atualizarParamtro(id, parametro):  # Update
         param.quantidadePorcao = parametro.quantidadePorcao
         param.intervaloPorcoes = parametro.intervaloPorcoes
         param.tempoProximaMatriz = parametro.tempoProximaMatriz
- 
+        param.tempoSemBrinco = parametro.tempoSemBrinco
+        
         db.session.commit()
         
         response = {
