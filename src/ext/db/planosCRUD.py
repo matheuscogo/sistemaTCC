@@ -17,11 +17,8 @@ def cadastrarPlano(plano, dias):  # Create
             planoObj = json.loads(str(dias))
             days = planoObj["plano"]
             db.session.add(plano)
-            db.session.commit()
+            db.session.commit()     
             for i in days:
-                dia = Dia(
-                    dia=dia
-                )
                 quantidade = i["quantidade"]
                 dia1 = i["dias"][0]
                 dia2 = i["dias"][1]
