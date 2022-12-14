@@ -56,10 +56,10 @@ class CreateInseminacao(Resource):
             parser = reqparse.RequestParser()
             parser.add_argument('matrizId', type=int)
             parser.add_argument('planoId', type=int)
-            parser.add_argument('dataInseminacao', type=lambda s: datetime.strptime(s, '%Y-%m-%dT%H:%M:%S.%fZ'))
+            parser.add_argument('dataInseminacao', type=lambda s: datetime.strptime(s, '%Y-%m-%d'))
             parser.add_argument('isNewCiclo', type=bool)
             args = parser.parse_args()
-            
+
             inseminacao = Inseminacao(
                 matrizId = args['matrizId'],
                 dataInseminacao = args['dataInseminacao'],

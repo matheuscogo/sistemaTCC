@@ -53,11 +53,8 @@ CREATE TABLE IF NOT EXISTS avisos (
   tipo INTEGER NULL,
   active BOOLEAN NULL,
   deleted BOOLEAN NULL,
-  confinamentos_id INTEGER NOT NULL,
-  PRIMARY KEY (id),
-  CONSTRAINT fk_avisos_confinamentos1
-    FOREIGN KEY (confinamentos_id)
-    REFERENCES confinamentos (id)
+  confinamentos_id INTEGER NULL,
+  PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS inseminacoes (

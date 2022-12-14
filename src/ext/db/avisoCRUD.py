@@ -78,7 +78,8 @@ def consultarAvisos():  # Read
         responses = db.session.query(
             Aviso.id, 
             Aviso.tipo, 
-            Aviso.dataAviso, 
+            Aviso.dataAviso,
+            Aviso.confinamentoId,
             Aviso.separate,
             Aviso.confinamentoId,
             Aviso.active, 
@@ -100,7 +101,7 @@ def consultarAvisos():  # Read
             if aviso.tipo == 2:
                 matriz = db.session.query(
                     Matriz
-                ).join(Confinamento, Confinamento.matrizId == Matriz.id).filter(
+                ).join(Confinamento, Confinamento.id == aviso.confinamentoId).filter(
                     Confinamento.active==True,
                     Matriz.deleted==False,
                     Confinamento.deleted==False
